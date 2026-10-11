@@ -1,0 +1,24 @@
+# Film in TV stasera: la guida di EPGItalia diventa un sensore con liste parallele
+# (titles, channels, starts, genres). Script e cache: /config/film_stasera/
+# Per toglierlo: cancella questo file e la cartella film_stasera, poi ricarica.
+command_line:
+  - sensor:
+      name: Film stasera
+      unique_id: film_stasera
+      command: "python3 /config/film_stasera/film_stasera.py"
+      command_timeout: 240            # sul Raspberry il primo download puo' essere lento
+      scan_interval: 31536000         # si aggiorna solo dall'automazione qui sotto
+      value_template: "{{ value_json.count }}"
+      json_attributes: [date, updated, stale, titles, channels, starts, genres, error]
+
+automation:
+  - id: film_stasera_aggiorna
+    alias: "Film stasera: aggiorna la guida"
+    mode: single
+    triggers:
+      - trigger: time
+        at: ["06:15:00", "17:00:00"]
+    actions:
+      - action: homeassistant.update_entity
+        target:
+          entity_id: sensor.film_stasera
