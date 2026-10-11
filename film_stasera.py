@@ -2,7 +2,7 @@
 """Film in TV stasera: scarica la guida XMLTV di EPGItalia e stampa un JSON con i film della prima serata.
 
 Pensato per un sensore command_line di Home Assistant (e per il plugin Tessera che legge i suoi attributi):
-  - stampa UNA riga di JSON su stdout, con liste parallele (titles, channels, starts, genres) invece di oggetti;
+  - stampa UNA riga di JSON su stdout, con liste parallele (titles, channels, starts, genres, groups, logos) invece di oggetti;
   - ricorda l'ultimo risultato buono in un file di cache: se il download fallisce (o il file e' anomalo) stampa quello,
     con "stale": true; se la cache e' fresca non riscarica nulla (serve all'avvio di HA);
   - tutti i messaggi vanno su stderr. Esce sempre con 0 tranne errori d'uso, cosi' il sensore non perde i dati.
@@ -66,6 +66,24 @@ CHANNELS = {
     "20": ["20 mediaset", "mediaset 20"],
 }
 ALIAS = {a: shown for shown, aliases in CHANNELS.items() for a in aliases}
+
+# Gruppo di ogni canale, un numero 1-4 che il tile Tessera trasforma in un colore (0 = nessuno): 1 Rai, 2 Mediaset,
+# 3 Discovery, 4 gli altri.
+NETWORKS = {
+    1: ["Rai 1", "Rai 2", "Rai 3", "Rai 4", "Rai Movie"],
+    2: ["Rete 4", "Canale 5", "Italia 1", "Italia 2", "20", "Iris", "Top Crime", "Cine34", "Focus"],
+    3: ["NOVE", "Discovery", "Real Time", "DMAX"],
+    4: ["La7", "TV8"],
+}
+GROUP = {name: number for number, names in NETWORKS.items() for name in names}
+
+# Loghi: file <slug>.png in LOGOS_DIR (li scarica download_logos.py), serviti da HA come /local/tv-logos/<slug>.png.
+LOGOS_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "www", "tv-logos")
+LOGOS_URL = "/local/tv-logos"
+
+
+def slug(name):
+    return "".join(c for c in name.lower() if c.isalnum())
 
 # Un programma e' un film se ha una di queste categorie; i telefilm (episodi di serie) restano fuori.
 FILM_CATEGORIES = {"film", "film animazione"}
@@ -171,6 +189,7 @@ def extract(path, day):
                                 "channel": shown,
                                 "at": int(start_aw.timestamp()),
                                 "genre": genre.capitalize(),
+                                "group": GROUP.get(shown, 0),
                             })
                 el.clear()
     # Il file ripete lo stesso canale con id diversi e orari che differiscono di pochi secondi:
@@ -189,7 +208,12 @@ def extract(path, day):
     return films, stats
 
 
-def build(day, films, stale=False, error=""):
+def logo_of(channel, logos_dir):
+    name = slug(channel) + ".png"
+    return f"{LOGOS_URL}/{name}" if logos_dir and os.path.isfile(os.path.join(logos_dir, name)) else ""
+
+
+def build(day, films, stale=False, error="", logos_dir=None):
     films = films[:MAX_ITEMS]
     out = {
         "date": day.isoformat(),
@@ -200,6 +224,8 @@ def build(day, films, stale=False, error=""):
         "channels": [f["channel"] for f in films],
         "starts": [f["at"] for f in films],
         "genres": [f["genre"] for f in films],
+        "groups": [f["group"] for f in films],
+        "logos": [logo_of(f["channel"], logos_dir) for f in films],
     }
     if error:
         out["error"] = error[:120]
@@ -262,6 +288,7 @@ def main():
     ap.add_argument("--cache", default=DEFAULT_CACHE, help="file con l'ultimo risultato buono")
     ap.add_argument("--max-age-hours", type=float, default=DEFAULT_MAX_AGE_HOURS,
                     help="se la cache di oggi e' piu' recente di cosi' non riscarica (0 = riscarica sempre)")
+    ap.add_argument("--logos-dir", default=LOGOS_DIR, help="cartella dei loghi <canale>.png (default: /config/www/tv-logos)")
     ap.add_argument("--input", help="usa questo guide.gzip invece di scaricarlo")
     ap.add_argument("--date", help="giorno AAAA-MM-GG (default: oggi a Roma)")
     ap.add_argument("--dry-run", action="store_true", help="elenco leggibile, non scrive la cache")
@@ -279,7 +306,7 @@ def main():
         out = cache
     else:
         try:
-            out = build(day, fetch_today(day, args.input))
+            out = build(day, fetch_today(day, args.input), logos_dir=args.logos_dir)
             if not args.dry_run:
                 write_atomic(args.cache, json.dumps(out, ensure_ascii=False, separators=(",", ":")))
         except Exception as e:  # rete, file strano, disco: qualunque cosa, non perdere i dati buoni
@@ -287,7 +314,7 @@ def main():
             if cache:
                 out = dict(cache, stale=True, error=str(e)[:120])   # tiene la data originale: il tile sa che e' vecchio
             else:
-                out = build(day, [], stale=True, error=str(e))
+                out = build(day, [], stale=True, error=str(e), logos_dir=args.logos_dir)
 
     if args.dry_run:
         for t, c, s, g in zip(out["titles"], out["channels"], out["starts"], out["genres"]):

@@ -27,6 +27,8 @@ per film, in ordine di orario:
 | `channels` | Canali |
 | `starts` | Inizio, secondi dal 1970 |
 | `genres` | Genere (puo' essere vuoto) |
+| `groups` | Gruppo del canale: 1 Rai, 2 Mediaset, 3 Discovery, 4 altri (il tile Tessera lo trasforma in un colore) |
+| `logos` | Percorso del logo (`/local/tv-logos/<canale>.png`), vuoto se non c'e' il file |
 | `date` | Il giorno della guida (`AAAA-MM-GG`) |
 | `updated` | Quando e' stata fatta, secondi dal 1970 |
 | `stale` | `true` se e' un risultato vecchio |
@@ -44,6 +46,19 @@ Il package aggiorna il sensore ogni giorno alle 6:15 e alle 17:00. Il primo aggi
 Raspberry 4 e' durato circa 17 secondi.
 
 **Per toglierlo:** cancella `packages/film_stasera.yaml` e la cartella `film_stasera`, poi ricarica.
+
+## Loghi dei canali (facoltativi)
+`download_logos.py` scarica i loghi dei tuoi canali (quelli che la guida indica) in `/config/www/tv-logos/`, da dove HA li
+serve a `/local/tv-logos/<canale>.png`. Sono **15 canali su 20** e circa **300 KB** in tutto; NOVE, Rai 4, Discovery, Real
+Time e DMAX non hanno un logo nella guida. Si esegue una volta (e di nuovo se aggiungi canali):
+
+```
+python3 download_logos.py --dest /config/www/tv-logos
+```
+
+Poi il sensore riempie `logos` da solo, e `dashboard_card.yaml` e' una scheda Markdown da incollare in una dashboard
+(ora, logo e titolo, con i film gia' finiti nascosti). I loghi sono marchi di terzi che ospita guidatv.sky.it:
+**non metterli in un repository pubblico** (la cartella e' esclusa dal repository).
 
 ## Prova
 ```

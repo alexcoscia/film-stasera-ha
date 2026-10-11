@@ -1,0 +1,28 @@
+# Scheda Markdown per una dashboard di Home Assistant: ora, logo e titolo dei film di stasera, dal sensore film_stasera.
+# I film iniziati da piu' di due ore e mezza spariscono. Dove manca il logo compare il nome del canale.
+# Come si usa: nell'editor della dashboard "Aggiungi scheda" -> "Markdown" -> "Mostra editor di codice" e incolla questo.
+# I loghi vengono da download_logos.py (cartella /config/www/tv-logos); sono scuri su fondo trasparente, quindi la
+# scheda li mette su un riquadro bianco.
+type: markdown
+entity_id: [sensor.film_stasera]
+grid_options: { columns: full }
+content: |-
+  {%- set e = states.sensor.film_stasera -%}
+  {%- if e is none or e.state in ['unknown', 'unavailable'] or not e.attributes.titles -%}
+  Nessun film in programma.
+  {%- else -%}
+  {%- set a = e.attributes -%}
+  {%- set ora = now().timestamp() -%}
+  {%- if a.stale %}
+  Guida non aggiornata ({{ a.date }}).
+  {%- endif %}
+  <table>
+  {%- for i in range(a.titles | length) if a.starts[i] + 9000 >= ora %}
+  <tr>
+  <td><b>{{ a.starts[i] | timestamp_custom('%H:%M') }}</b></td>
+  <td>{% if a.logos is defined and a.logos[i] %}<img src="{{ a.logos[i] }}" height="30" style="background:#ffffff;border-radius:6px;padding:2px 8px">{% else %}{{ a.channels[i] }}{% endif %}</td>
+  <td><b>{{ a.titles[i] }}</b>{% if a.genres[i] %}<br><small>{{ a.channels[i] }} · {{ a.genres[i] }}</small>{% else %}<br><small>{{ a.channels[i] }}</small>{% endif %}</td>
+  </tr>
+  {%- endfor %}
+  </table>
+  {%- endif -%}

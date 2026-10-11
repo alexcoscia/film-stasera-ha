@@ -1,3 +1,6 @@
 film_stasera_cache.json
 __pycache__/
 *.pyc
+logos/
+tv-logos/
+*.png
