@@ -63,6 +63,9 @@
    "variables": {
     "i": 0
    },
+   "grid_options": {
+    "columns": "full"
+   },
    "tap_action": {
     "action": "fire-dom-event",
     "browser_mod": {
@@ -83,6 +86,9 @@
    "entity": "sensor.film_stasera",
    "variables": {
     "i": 1
+   },
+   "grid_options": {
+    "columns": "full"
    },
    "tap_action": {
     "action": "fire-dom-event",
@@ -105,6 +111,9 @@
    "variables": {
     "i": 2
    },
+   "grid_options": {
+    "columns": "full"
+   },
    "tap_action": {
     "action": "fire-dom-event",
     "browser_mod": {
@@ -125,6 +134,9 @@
    "entity": "sensor.film_stasera",
    "variables": {
     "i": 3
+   },
+   "grid_options": {
+    "columns": "full"
    },
    "tap_action": {
     "action": "fire-dom-event",
@@ -147,6 +159,9 @@
    "variables": {
     "i": 4
    },
+   "grid_options": {
+    "columns": "full"
+   },
    "tap_action": {
     "action": "fire-dom-event",
     "browser_mod": {
@@ -167,6 +182,9 @@
    "entity": "sensor.film_stasera",
    "variables": {
     "i": 5
+   },
+   "grid_options": {
+    "columns": "full"
    },
    "tap_action": {
     "action": "fire-dom-event",
@@ -189,6 +207,9 @@
    "variables": {
     "i": 6
    },
+   "grid_options": {
+    "columns": "full"
+   },
    "tap_action": {
     "action": "fire-dom-event",
     "browser_mod": {
@@ -209,6 +230,9 @@
    "entity": "sensor.film_stasera",
    "variables": {
     "i": 7
+   },
+   "grid_options": {
+    "columns": "full"
    },
    "tap_action": {
     "action": "fire-dom-event",
@@ -231,6 +255,9 @@
    "variables": {
     "i": 8
    },
+   "grid_options": {
+    "columns": "full"
+   },
    "tap_action": {
     "action": "fire-dom-event",
     "browser_mod": {
@@ -251,6 +278,9 @@
    "entity": "sensor.film_stasera",
    "variables": {
     "i": 9
+   },
+   "grid_options": {
+    "columns": "full"
    },
    "tap_action": {
     "action": "fire-dom-event",
@@ -273,6 +303,9 @@
    "variables": {
     "i": 10
    },
+   "grid_options": {
+    "columns": "full"
+   },
    "tap_action": {
     "action": "fire-dom-event",
     "browser_mod": {
@@ -293,6 +326,9 @@
    "entity": "sensor.film_stasera",
    "variables": {
     "i": 11
+   },
+   "grid_options": {
+    "columns": "full"
    },
    "tap_action": {
     "action": "fire-dom-event",
@@ -315,6 +351,9 @@
    "variables": {
     "i": 12
    },
+   "grid_options": {
+    "columns": "full"
+   },
    "tap_action": {
     "action": "fire-dom-event",
     "browser_mod": {
@@ -335,6 +374,9 @@
    "entity": "sensor.film_stasera",
    "variables": {
     "i": 13
+   },
+   "grid_options": {
+    "columns": "full"
    },
    "tap_action": {
     "action": "fire-dom-event",
@@ -357,6 +399,9 @@
    "variables": {
     "i": 14
    },
+   "grid_options": {
+    "columns": "full"
+   },
    "tap_action": {
     "action": "fire-dom-event",
     "browser_mod": {
@@ -377,6 +422,9 @@
    "entity": "sensor.film_stasera",
    "variables": {
     "i": 15
+   },
+   "grid_options": {
+    "columns": "full"
    },
    "tap_action": {
     "action": "fire-dom-event",
@@ -399,6 +447,9 @@
    "variables": {
     "i": 16
    },
+   "grid_options": {
+    "columns": "full"
+   },
    "tap_action": {
     "action": "fire-dom-event",
     "browser_mod": {
@@ -419,6 +470,9 @@
    "entity": "sensor.film_stasera",
    "variables": {
     "i": 17
+   },
+   "grid_options": {
+    "columns": "full"
    },
    "tap_action": {
     "action": "fire-dom-event",
@@ -441,6 +495,9 @@
    "variables": {
     "i": 18
    },
+   "grid_options": {
+    "columns": "full"
+   },
    "tap_action": {
     "action": "fire-dom-event",
     "browser_mod": {
@@ -461,6 +518,9 @@
    "entity": "sensor.film_stasera",
    "variables": {
     "i": 19
+   },
+   "grid_options": {
+    "columns": "full"
    },
    "tap_action": {
     "action": "fire-dom-event",

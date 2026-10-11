@@ -15,11 +15,11 @@ Il tile Tessera del 7B non cambia: l'API dei plugin non mostra immagini né apre
 - Nuovi attributi del sensore, liste parallele a `titles`:
   - `tmdb_ids` (numero, 0 se non trovato)
   - `posters` (URL `https://image.tmdb.org/t/p/w342/...`, "" se manca)
-  - `overviews` (trama; troncata a 600 caratteri)
+  - `overviews` (trama; al massimo 600 caratteri, piu' corta quando serve per restare sotto i 15.500 byte di attributi)
   - `casts` (primi 6 nomi, separati da virgola)
   - `years` (anno di uscita, "" se ignoto)
 - Chiave API: file `/config/film_stasera/tmdb.key` (una riga), escluso dal repository con `.gitignore`. Senza il file lo script funziona come oggi (nessun attributo nuovo valorizzato).
-- Dimensione: con 16 film gli attributi stanno sotto i 16 KB che HA salva nel database; la trama a 600 caratteri e il limite a 20 film servono a restarci.
+- Dimensione: con 16 film gli attributi stanno sotto i 16 KB che HA salva nel database; lo script accorcia le trame piu' lunghe finche' il JSON sta sotto 15.500 byte (e i film sono al massimo 20).
 - Errori di rete o di TMDB: il film resta senza dettagli, mai un errore per tutta la guida.
 
 ## Dashboard

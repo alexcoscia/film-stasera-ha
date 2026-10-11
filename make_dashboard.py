@@ -80,6 +80,7 @@ def build_config(slots=20):
             "template": "film_row",
             "entity": SENSOR,
             "variables": {"i": i},
+            "grid_options": {"columns": "full"},
             "tap_action": {
                 "action": "fire-dom-event",
                 "browser_mod": {

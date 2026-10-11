@@ -60,6 +60,20 @@ Poi il sensore riempie `logos` da solo, e `dashboard_card.yaml` e' una scheda Ma
 (ora, logo e titolo, con i film gia' finiti nascosti). I loghi sono marchi di terzi che ospita guidatv.sky.it:
 **non metterli in un repository pubblico** (la cartella e' esclusa dal repository).
 
+## Dettagli dei film (TMDB) e dashboard con popup (facoltativi)
+
+Con una chiave di [TMDB](https://www.themoviedb.org/) il sensore ha anche locandina, trama e cast in italiano.
+
+1. Crea un account su themoviedb.org, poi *Impostazioni, API* e copia la chiave (v3) o il token (v4, inizia per `eyJ`).
+2. Mettila, da sola su una riga, nel file `/config/film_stasera/tmdb.key` di HA. **Non** va nel repository (`.gitignore` la esclude) e non va incollata in chat.
+3. Aggiorna il sensore. Attributi nuovi, una voce per film: `tmdb_ids` (0 se non trovato), `posters`, `overviews`, `casts`, `years`. Senza il file i film hanno id 0 e testi vuoti, e tutto il resto funziona come prima.
+
+Come funziona: ogni film si cerca una volta sola e il risultato resta in `film_stasera_tmdb.json` (un film non trovato si riprova dopo 7 giorni). Un titolo si accetta solo se coincide con il titolo italiano o originale: per i titoli che non sono film (speciali, serie) non c'e' nessun dettaglio, mai quello di un altro film. Le trame piu' lunghe vengono accorciate perche' gli attributi restino sotto i 16 KB che HA salva nel database.
+
+**Dashboard con popup.** `python3 make_dashboard.py > dashboard.json` genera 20 righe `custom:button-card` (orario, logo, titolo) e il template `film_row`. Servono da HACS **button-card** e **browser_mod**. Il template va nella radice della configurazione della dashboard (`button_card_templates`), le 20 schede in una sezione; un clic su una riga apre il popup con locandina, trama e cast. Senza button-card puoi usare la scheda Markdown di `dashboard_card.yaml`, senza popup.
+
+*This product uses the TMDB API but is not endorsed or certified by TMDB.* Uso personale e non commerciale.
+
 ## Prova
 ```
 python3 film_stasera.py --dry-run          # elenco leggibile, non scrive la cache
