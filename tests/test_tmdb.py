@@ -173,5 +173,24 @@ class EnrichTest(unittest.TestCase):
         self.assertEqual(len(fitted["overviews"]), 20)
 
 
+class CliTest(unittest.TestCase):
+    def test_senza_chiave(self):
+        import subprocess
+        with tempfile.TemporaryDirectory() as tmp:
+            cache = os.path.join(tmp, "c.json")
+            with open(cache, "w", encoding="utf-8") as f:
+                import time as _t
+                json.dump(dict(out_of("La giuria", "Boh"), updated=int(_t.time())), f)
+            r = subprocess.run([sys.executable, "-I", os.path.join(os.path.dirname(fs.__file__), "film_stasera.py"),
+                                "--date", "2026-10-11", "--cache", cache, "--logos-dir", tmp,
+                                "--tmdb-key-file", os.path.join(tmp, "manca.key"),
+                                "--tmdb-cache", os.path.join(tmp, "t.json")],
+                               capture_output=True, text=True, timeout=60)
+        self.assertEqual(r.returncode, 0, r.stderr)
+        out = json.loads(r.stdout)
+        self.assertEqual(out["tmdb_ids"], [0, 0])
+        self.assertEqual(out["titles"], ["La giuria", "Boh"])
+
+
 if __name__ == "__main__":
     unittest.main()

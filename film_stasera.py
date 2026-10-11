@@ -419,6 +419,8 @@ def main():
     ap.add_argument("--logos-dir", default=LOGOS_DIR, help="cartella dei loghi <canale>.png (default: /config/www/tv-logos)")
     ap.add_argument("--input", help="usa questo guide.gzip invece di scaricarlo")
     ap.add_argument("--date", help="giorno AAAA-MM-GG (default: oggi a Roma)")
+    ap.add_argument("--tmdb-key-file", default=DEFAULT_TMDB_KEY, help="file con la chiave TMDB (una riga)")
+    ap.add_argument("--tmdb-cache", default=DEFAULT_TMDB_CACHE, help="cache dei dettagli dei film")
     ap.add_argument("--dry-run", action="store_true", help="elenco leggibile, non scrive la cache")
     args = ap.parse_args()
 
@@ -444,10 +446,16 @@ def main():
             else:
                 out = build(day, [], stale=True, error=str(e), logos_dir=args.logos_dir)
 
+    try:
+        out = enrich(out, read_key(args.tmdb_key_file), args.tmdb_cache, write=not args.dry_run)
+    except Exception as e:   # mai perdere la guida per colpa dei dettagli
+        print(f"TMDB: saltato ({type(e).__name__})", file=sys.stderr)
+
     if args.dry_run:
-        for t, c, s, g in zip(out["titles"], out["channels"], out["starts"], out["genres"]):
+        years = out.get("years") or [""] * len(out["titles"])
+        for t, c, s, g, y in zip(out["titles"], out["channels"], out["starts"], out["genres"], years):
             local = to_rome(datetime.fromtimestamp(s, timezone.utc))
-            print(f"{local:%H:%M} {c:<10} {t} {('| ' + g) if g else ''}")
+            print(f"{local:%H:%M} {c:<10} {('(' + y + ') ') if y else ''}{t} {('| ' + g) if g else ''}")
         print(f"-- {out['count']} film, data {out['date']}, stale={out['stale']}", file=sys.stderr)
     else:
         print(json.dumps(out, ensure_ascii=False, separators=(",", ":")))

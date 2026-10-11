@@ -9,7 +9,7 @@ command_line:
       command_timeout: 240            # sul Raspberry il primo download puo' essere lento
       scan_interval: 31536000         # si aggiorna solo dall'automazione qui sotto
       value_template: "{{ value_json.count }}"
-      json_attributes: [date, updated, stale, titles, channels, starts, genres, groups, logos, error]
+      json_attributes: [date, updated, stale, titles, channels, starts, genres, groups, logos, tmdb_ids, posters, overviews, casts, years, error]
 
 automation:
   - id: film_stasera_aggiorna

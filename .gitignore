@@ -5,3 +5,5 @@ logos/
 tv-logos/
 *.png
 .superpowers/
+tmdb.key
+film_stasera_tmdb.json
