@@ -4,3 +4,4 @@ __pycache__/
 logos/
 tv-logos/
 *.png
+.superpowers/

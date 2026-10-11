@@ -21,9 +21,11 @@ import argparse
 import gzip
 import json
 import os
+import re
 import sys
 import tempfile
 import time
+import urllib.parse
 import urllib.request
 import xml.etree.ElementTree as ET
 from datetime import date, datetime, timedelta, timezone
@@ -35,6 +37,19 @@ MAX_XML = 400_000_000         # byte decompressi (il file di oggi e' ~100 MB)
 TIMEOUT = 120
 DEFAULT_CACHE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "film_stasera_cache.json")
 DEFAULT_MAX_AGE_HOURS = 4.0
+HERE = os.path.dirname(os.path.abspath(__file__))
+# TMDB (themoviedb.org): locandina, trama e cast in italiano. Chiave in un file accanto allo script, mai nel repository.
+TMDB_API = "https://api.themoviedb.org/3"
+TMDB_IMG = "https://image.tmdb.org/t/p/w342"
+DEFAULT_TMDB_KEY = os.path.join(HERE, "tmdb.key")
+DEFAULT_TMDB_CACHE = os.path.join(HERE, "film_stasera_tmdb.json")
+TMDB_TIMEOUT = 10         # secondi per richiesta
+TMDB_BUDGET = 60          # secondi in tutto per le ricerche di un'esecuzione (il sensore ha 240 s)
+TMDB_MISS_DAYS = 7        # un film non trovato si riprova dopo una settimana
+TMDB_KEEP_DAYS = 30       # voci non viste da un mese si tolgono dalla cache
+MAX_OVERVIEW = 600
+MAX_CAST = 6
+MAX_JSON = 15500          # HA salva nel database gli attributi solo sotto i 16 KB
 
 # Prima serata: i film che INIZIANO tra queste ore (ora di Roma) del giorno scelto.
 FROM_HOUR, TO_HOUR = 20, 24
@@ -281,6 +296,119 @@ def fetch_today(day, input_path):
     if no_data:
         print("ATTENZIONE, nessun programma in serata per:", ", ".join(no_data), file=sys.stderr)
     return films
+
+
+def read_key(path):
+    try:
+        with open(path, encoding="utf-8") as f:
+            return f.read().strip()
+    except OSError:
+        return ""
+
+
+def tmdb_get(path, key, params, timeout=TMDB_TIMEOUT):
+    """GET su TMDB. La chiave v3 va nel parametro, il token v4 (inizia per eyJ) nell'intestazione. Non stampa mai l'URL."""
+    q = dict(params)
+    headers = {"User-Agent": "film-stasera/1.0 (uso personale)", "Accept": "application/json"}
+    if key.startswith("eyJ"):
+        headers["Authorization"] = "Bearer " + key
+    else:
+        q["api_key"] = key
+    req = urllib.request.Request(f"{TMDB_API}/{path}?{urllib.parse.urlencode(q)}", headers=headers)
+    with urllib.request.urlopen(req, timeout=timeout) as r:
+        return json.loads(r.read(2_000_000).decode("utf-8"))
+
+
+def split_title(title):
+    """'Non siamo soli (2022)' -> ('Non siamo soli', 2022); senza anno -> (titolo, 0)."""
+    m = re.match(r"^(.*?)\s*\((\d{4})\)\s*$", title or "")
+    return (m.group(1), int(m.group(2))) if m else ((title or "").strip(), 0)
+
+
+def norm_title(s):
+    return " ".join("".join(c if c.isalnum() else " " for c in (s or "").lower()).split())
+
+
+def key_of(title):
+    name, year = split_title(title)
+    return f"{norm_title(name)}|{year or ''}"
+
+
+def lookup(title, key, get=tmdb_get):
+    """Cerca il film su TMDB. Prende un risultato solo se il titolo coincide (ignorando punteggiatura e maiuscole) con il
+    titolo italiano o originale: meglio nessun dettaglio che quello di un altro film. {"id": 0} se non c'e'.
+    Solleva l'errore di rete: chi chiama decide cosa ricordare."""
+    name, year = split_title(title)
+    params = {"query": name, "language": "it-IT", "include_adult": "false"}
+    if year:
+        params["year"] = year
+    results = get("search/movie", key, params).get("results", [])[:5]
+    want = norm_title(name)
+    hit = next((r for r in results if want in (norm_title(r.get("title")), norm_title(r.get("original_title")))), None)
+    if not hit:
+        return {"id": 0}
+    d = get(f"movie/{hit['id']}", key, {"language": "it-IT", "append_to_response": "credits"})
+    cast = [p["name"] for p in (d.get("credits") or {}).get("cast", [])[:MAX_CAST] if p.get("name")]
+    text = " ".join((d.get("overview") or "").split())
+    if len(text) > MAX_OVERVIEW:
+        text = text[:MAX_OVERVIEW - 1].rstrip() + "…"
+    poster = d.get("poster_path") or ""
+    return {"id": int(d["id"]), "poster": TMDB_IMG + poster if poster else "", "overview": text,
+            "cast": ", ".join(cast), "year": (d.get("release_date") or "")[:4]}
+
+
+def load_dict(path):
+    try:
+        with open(path, encoding="utf-8") as f:
+            d = json.load(f)
+        return d if isinstance(d, dict) else {}
+    except (OSError, ValueError):
+        return {}
+
+
+def fit_size(out, limit=MAX_JSON):
+    """Accorcia le trame (le piu' lunghe per prime) finche' il JSON sta sotto il limite."""
+    out = dict(out, overviews=list(out["overviews"]))
+    while len(json.dumps(out, ensure_ascii=False, separators=(",", ":"))) > limit:
+        i = max(range(len(out["overviews"])), key=lambda j: len(out["overviews"][j]), default=None)
+        if i is None or len(out["overviews"][i]) <= 1:
+            break
+        out["overviews"][i] = out["overviews"][i][:max(1, len(out["overviews"][i]) - 50)].rstrip()
+    return out
+
+
+def enrich(out, key, cache_path, get=tmdb_get, clock=time.time, write=True):
+    """Aggiunge a `out` le liste tmdb_ids, posters, overviews, casts, years (una voce per film). Non solleva mai:
+    senza chiave, in caso di errori o finito il tempo a disposizione, i film senza dettaglio hanno id 0 e testi vuoti."""
+    empty = {"id": 0, "poster": "", "overview": "", "cast": "", "year": ""}
+    cache = load_dict(cache_path)
+    started = clock()
+    details = []
+    for title in out["titles"]:
+        k = key_of(title)
+        hit = cache.get(k)
+        known = isinstance(hit, dict) and (hit.get("id") or clock() - hit.get("checked", 0) < TMDB_MISS_DAYS * 86400)
+        if not known and key and clock() - started < TMDB_BUDGET:
+            try:
+                hit = dict(lookup(title, key, get), checked=int(clock()))
+                cache[k] = hit
+            except Exception as e:   # rete, chiave, risposta strana: si riprova al prossimo giro
+                print(f"TMDB: {title[:30]}: {type(e).__name__}", file=sys.stderr)
+        if isinstance(hit, dict):
+            hit["seen"] = int(clock())
+        details.append(hit if isinstance(hit, dict) and hit.get("id") else empty)
+    if write and key:
+        limit = clock() - TMDB_KEEP_DAYS * 86400
+        cache = {k: v for k, v in cache.items() if isinstance(v, dict) and v.get("seen", 0) >= limit}
+        try:
+            write_atomic(cache_path, json.dumps(cache, ensure_ascii=False, separators=(",", ":")))
+        except OSError as e:
+            print(f"TMDB: cache non scritta: {e}", file=sys.stderr)
+    res = dict(out,
+               tmdb_ids=[d["id"] for d in details], posters=[d["poster"] for d in details],
+               overviews=[d["overview"] for d in details], casts=[d["cast"] for d in details],
+               years=[d["year"] for d in details])
+    return fit_size(res)
 
 
 def main():
