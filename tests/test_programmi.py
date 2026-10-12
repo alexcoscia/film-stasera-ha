@@ -152,3 +152,109 @@ class ExtractTest(unittest.TestCase):
 
     def test_i_film_restano_come_prima(self):
         self.assertEqual([(f["channel"], f["title"]) for f in self.films], [("Italia 1", "Retribution")])
+
+
+def rows_of(n):
+    return [{"channel": f"Canale {i}", "group": 2, "prime": prog(f"Prima serata {i} " + "x" * 30, 21 * 60 + 30, at=1000 + i),
+             "late": prog(f"Seconda serata {i} " + "y" * 30, 24 * 60 + 8, at=2000 + i)} for i in range(n)]
+
+
+class BuildOutputTest(unittest.TestCase):
+    day = date(2026, 10, 12)
+
+    def test_sei_liste_della_stessa_lunghezza(self):
+        out = fs.build(self.day, [], programmes=rows_of(3))
+        self.assertEqual({len(out[k]) for k in fs.PROG_KEYS}, {3})
+        self.assertEqual(out["prog_channels"], ["Canale 0", "Canale 1", "Canale 2"])
+        self.assertEqual(out["prog1_starts"], [1000, 1001, 1002])
+        self.assertEqual(out["prog2_starts"], [2000, 2001, 2002])
+
+    def test_fascia_mancante(self):
+        rows = [{"channel": "Rai 1", "group": 1, "prime": prog("Sera", 21 * 60 + 30, at=5), "late": None}]
+        out = fs.build(self.day, [], programmes=rows)
+        self.assertEqual((out["prog2_titles"], out["prog2_starts"]), ([""], [0]))
+
+    def test_senza_programmi_liste_vuote(self):
+        out = fs.build(self.day, [])
+        self.assertEqual([out[k] for k in fs.PROG_KEYS], [[], [], [], [], [], []])
+
+    def test_titoli_dei_programmi_accorciati(self):
+        out = fs.build(self.day, [], programmes=rows_of(2))
+        self.assertTrue(all(len(x) <= fs.MAX_PROG_TITLE for x in out["prog1_titles"] + out["prog2_titles"]))
+        self.assertTrue(out["prog1_titles"][0].startswith("Prima serata 0"))
+
+    def test_i_campi_di_prima_non_cambiano(self):
+        out = fs.build(self.day, [], programmes=rows_of(1))
+        for k in ("date", "updated", "stale", "count", "titles", "channels", "starts", "genres", "groups", "logos"):
+            self.assertIn(k, out)
+
+
+class SizeTest(unittest.TestCase):
+    def test_sedici_canali_pesano_poco(self):
+        # Il tile riceve al massimo 2600 byte tra film e programmi (X_BUDGET dell'app): con i titoli a 30 caratteri
+        # sedici canali pesano meno di 1700 byte, e oggi i film ne pesano ~800.
+        out = fs.build(date(2026, 10, 12), [], programmes=rows_of(16))
+        part = {k: out[k] for k in fs.PROG_KEYS}
+        self.assertLess(len(json.dumps(part, ensure_ascii=False, separators=(",", ":"))), 1700)
+
+    def test_fit_size_taglia_le_trame_e_mai_i_programmi(self):
+        out = dict(fs.build(date(2026, 10, 12), [], programmes=rows_of(20)), overviews=["z" * 600] * 20)
+        before = {k: list(out[k]) for k in fs.PROG_KEYS}
+        res = fs.fit_size(out)
+        self.assertLessEqual(len(json.dumps(res, ensure_ascii=False, separators=(",", ":"))), fs.MAX_JSON)
+        self.assertEqual({k: res[k] for k in fs.PROG_KEYS}, before)
+
+
+class CacheTest(unittest.TestCase):
+    day = date(2026, 10, 12)
+
+    def cache(self, **kw):
+        c = dict(fs.build(self.day, [], programmes=rows_of(2)), updated=1000)
+        c.update(kw)
+        return c
+
+    def test_fresca(self):
+        self.assertTrue(fs.cache_is_fresh(self.cache(), self.day, 4, now=1000 + 3600))
+
+    def test_senza_programmi_non_e_mai_fresca(self):
+        old = {k: v for k, v in self.cache().items() if k not in fs.PROG_KEYS}
+        self.assertFalse(fs.cache_is_fresh(old, self.day, 4, now=1000 + 60))
+
+    def test_altri_motivi_per_riscaricare(self):
+        c = self.cache()
+        self.assertFalse(fs.cache_is_fresh(c, self.day, 4, now=1000 + 5 * 3600))                 # troppo vecchia
+        self.assertFalse(fs.cache_is_fresh(self.cache(stale=True), self.day, 4, now=1001))       # servita da cache
+        self.assertFalse(fs.cache_is_fresh(c, date(2026, 10, 13), 4, now=1001))                  # altro giorno
+        self.assertFalse(fs.cache_is_fresh(c, self.day, 0, now=1001))                            # sempre
+        self.assertFalse(fs.cache_is_fresh(c, self.day, 4, now=1001, use_input=True))            # file dato
+        self.assertFalse(fs.cache_is_fresh(None, self.day, 4, now=1001))
+
+    def test_load_cache_vecchia_e_incoerente(self):
+        with tempfile.TemporaryDirectory() as d:
+            path = os.path.join(d, "c.json")
+            old = {k: v for k, v in self.cache().items() if k not in fs.PROG_KEYS}
+            with open(path, "w") as f:
+                json.dump(old, f)
+            self.assertIsNotNone(fs.load_cache(path))                  # una cache di prima si legge ancora
+            bad = self.cache()
+            bad["prog1_titles"] = bad["prog1_titles"][:1]
+            with open(path, "w") as f:
+                json.dump(bad, f)
+            self.assertIsNone(fs.load_cache(path))                     # liste di lunghezza diversa: si scarta
+            with open(path, "w") as f:
+                json.dump(self.cache(), f)
+            self.assertIsNotNone(fs.load_cache(path))
+
+
+class DryRunTest(unittest.TestCase):
+    def test_righe_leggibili(self):
+        out = fs.build(date(2026, 10, 12), [], programmes=[
+            {"channel": "Rai 1", "group": 1, "prime": prog("Sera", 21 * 60 + 30, at=1791833400), "late": None}])
+        line = fs.programmes_lines(out)[0]
+        self.assertIn("Rai 1", line)
+        self.assertIn("21:30 Sera", line)                              # 1791833400 = 19:30 UTC = 21:30 ora di Roma
+        self.assertTrue(line.rstrip().endswith("-"))
+
+
+if __name__ == "__main__":
+    unittest.main()

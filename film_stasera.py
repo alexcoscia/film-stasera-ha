@@ -299,8 +299,9 @@ def logo_of(channel, logos_dir):
     return f"{LOGOS_URL}/{name}" if logos_dir and os.path.isfile(os.path.join(logos_dir, name)) else ""
 
 
-def build(day, films, stale=False, error="", logos_dir=None):
+def build(day, films, stale=False, error="", logos_dir=None, programmes=None):
     films = films[:MAX_ITEMS]
+    rows = programmes or []
     out = {
         "date": day.isoformat(),
         "updated": int(time.time()),
@@ -312,6 +313,13 @@ def build(day, films, stale=False, error="", logos_dir=None):
         "genres": [f["genre"] for f in films],
         "groups": [f["group"] for f in films],
         "logos": [logo_of(f["channel"], logos_dir) for f in films],
+        # Modalita' Programmi: una voce per canale (prima e seconda serata); fascia mancante: titolo "" e inizio 0.
+        "prog_channels": [r["channel"] for r in rows],
+        "prog_groups": [r["group"] for r in rows],
+        "prog1_titles": [r["prime"]["title"][:MAX_PROG_TITLE].rstrip() if r["prime"] else "" for r in rows],
+        "prog1_starts": [r["prime"]["at"] if r["prime"] else 0 for r in rows],
+        "prog2_titles": [r["late"]["title"][:MAX_PROG_TITLE].rstrip() if r["late"] else "" for r in rows],
+        "prog2_starts": [r["late"]["at"] if r["late"] else 0 for r in rows],
     }
     if error:
         out["error"] = error[:120]
@@ -326,9 +334,28 @@ def load_cache(path):
         if not (isinstance(c["date"], str) and isinstance(c["updated"], (int, float))
                 and len(c["channels"]) == n == len(c["starts"]) == len(c["genres"])):
             return None
+        # I programmi sono facoltativi (una cache di una versione precedente non li ha), ma se ci sono devono tornare.
+        if "prog_channels" in c and len({len(c.get(k, ())) for k in PROG_KEYS}) != 1:
+            return None
         return c
     except (OSError, ValueError, KeyError, TypeError):
         return None
+
+
+def cache_is_fresh(cache, day, max_age_hours, now, use_input=False):
+    """La cache di oggi, buona e abbastanza recente: niente nuovo download. Una cache senza i programmi (scritta da una
+    versione precedente dello script) non e' mai fresca."""
+    return bool(cache and cache["date"] == day.isoformat() and not cache.get("stale")
+                and "prog_channels" in cache and max_age_hours > 0 and not use_input
+                and now - cache["updated"] < max_age_hours * 3600)
+
+
+def programmes_lines(out):
+    """Righe leggibili per --dry-run: canale, prima serata, seconda serata."""
+    def show(title, start):
+        return f"{to_rome(datetime.fromtimestamp(start, timezone.utc)):%H:%M} {title}" if start else "-"
+    return [f"{ch:<10} {show(out['prog1_titles'][i], out['prog1_starts'][i]):<48} "
+            f"{show(out['prog2_titles'][i], out['prog2_starts'][i])}" for i, ch in enumerate(out.get("prog_channels", []))]
 
 
 def write_atomic(path, text):
@@ -500,15 +527,14 @@ def main():
     cache = load_cache(args.cache)
     out = None
 
-    fresh = (cache and cache["date"] == day.isoformat() and not cache.get("stale")
-             and args.max_age_hours > 0 and not args.input
-             and time.time() - cache["updated"] < args.max_age_hours * 3600)
+    fresh = cache_is_fresh(cache, day, args.max_age_hours, time.time(), bool(args.input))
     if fresh:
         print("cache fresca: nessun download", file=sys.stderr)
         out = cache
     else:
         try:
-            out = build(day, fetch_today(day, args.input), logos_dir=args.logos_dir)
+            films, programmes = fetch_today(day, args.input)
+            out = build(day, films, logos_dir=args.logos_dir, programmes=programmes)
             if not args.dry_run:
                 write_atomic(args.cache, json.dumps(out, ensure_ascii=False, separators=(",", ":")))
         except Exception as e:  # rete, file strano, disco: qualunque cosa, non perdere i dati buoni
@@ -528,6 +554,9 @@ def main():
         for t, c, s, g, y in zip(out["titles"], out["channels"], out["starts"], out["genres"], years):
             local = to_rome(datetime.fromtimestamp(s, timezone.utc))
             print(f"{local:%H:%M} {c:<10} {('(' + y + ') ') if y else ''}{t} {('| ' + g) if g else ''}")
+        print("-- programmi (canale, prima serata, seconda serata):")
+        for line in programmes_lines(out) if "prog_channels" in out else []:
+            print(line)
         print(f"-- {out['count']} film, data {out['date']}, stale={out['stale']}", file=sys.stderr)
     else:
         print(json.dumps(out, ensure_ascii=False, separators=(",", ":")))
