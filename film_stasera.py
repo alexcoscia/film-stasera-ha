@@ -92,6 +92,18 @@ NETWORKS = {
 }
 GROUP = {name: number for number, names in NETWORKS.items() for name in names}
 
+# Modalita' Programmi: prima e seconda serata. Minuti dalla mezzanotte del giorno scelto (ora di Roma): 26*60 sono le 02:00
+# del giorno dopo. Un programma conta solo se dura almeno MIN_MINUTES (niente TG, meteo, riempitivi).
+PRIME = (21 * 60, 22 * 60 + 30)    # prima serata: inizia tra le 21:00 e le 22:30
+LATE = (23 * 60, 26 * 60)          # seconda serata: inizia tra le 23:00 e le 02:00
+MIN_MINUTES = 30
+MAX_SHOWS = 20
+MAX_PROG_TITLE = 30   # il tile riceve al massimo 2600 byte tra film e programmi: i titoli dei programmi sono piu' corti
+PROG_KEYS = ["prog_channels", "prog_groups", "prog1_titles", "prog1_starts", "prog2_titles", "prog2_starts"]
+# Ordine per numero di telecomando (la numerazione piu' comune del digitale terrestre). Un canale che non e' qui va in fondo.
+CHANNEL_ORDER = ["Rai 1", "Rai 2", "Rai 3", "Rete 4", "Canale 5", "Italia 1", "La7", "TV8", "NOVE", "20", "Rai 4", "Iris",
+                 "Rai Movie", "Real Time", "Cine34", "Focus", "Top Crime", "DMAX", "Italia 2", "Discovery"]
+
 # Loghi: file <slug>.png in LOGOS_DIR (li scarica download_logos.py), serviti da HA come /local/tv-logos/<slug>.png.
 LOGOS_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "www", "tv-logos")
 LOGOS_URL = "/local/tv-logos"
@@ -221,6 +233,33 @@ def extract(path, day):
             stats["per_channel"][shown] += 1
     films.sort(key=lambda x: (x["at"], x["channel"]))
     return films, stats
+
+
+def channel_rank(name):
+    return CHANNEL_ORDER.index(name) if name in CHANNEL_ORDER else len(CHANNEL_ORDER)
+
+
+def pick_slot(items, lo, hi, min_minutes=MIN_MINUTES):
+    """Il primo programma (items e' ordinato per 'at') che inizia tra lo e hi minuti dalla mezzanotte e dura abbastanza.
+    Durata sconosciuta (None) va bene; un titolo vuoto no."""
+    for it in items:
+        if not it["title"]:
+            continue
+        if lo <= it["min"] < hi and (it["dur"] is None or it["dur"] >= min_minutes):
+            return it
+    return None
+
+
+def build_programmes(per_channel):
+    """per_channel: nome -> programmi (dict con title, at, min, dur). Ritorna, in ordine di telecomando, una riga per canale
+    che ha almeno una fascia: {"channel", "group", "prime", "late"} (prime/late sono il programma o None)."""
+    rows = []
+    for name in sorted(per_channel, key=lambda n: (channel_rank(n), n)):
+        items = sorted(per_channel[name], key=lambda x: x["at"])
+        prime, late = pick_slot(items, *PRIME), pick_slot(items, *LATE)
+        if prime or late:
+            rows.append({"channel": name, "group": GROUP.get(name, 0), "prime": prime, "late": late})
+    return rows[:MAX_SHOWS]
 
 
 def logo_of(channel, logos_dir):
