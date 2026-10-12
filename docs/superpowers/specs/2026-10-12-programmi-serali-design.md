@@ -1,6 +1,6 @@
 # Film stasera: modalità Programmi (prima e seconda serata)
 
-Data: 2026-10-12. Stato: da approvare.
+Data: 2026-10-12. Stato: approvata; aggiornata lo stesso giorno dopo le prime prove nel bench (budget dei dati, `date`).
 
 Riguarda due repository: lo script e il package HA (`film-stasera-ha`, questa cartella) e il plugin Tessera
 (`tessera-film-stasera`, `~/tessera-film-stasera`, release 0.3.0).
@@ -38,8 +38,12 @@ che sembra vuota: mostra un pulsante **Aggiorna** che lancia lo script.
   `prog_channels`, `prog_groups` (il gruppo 1–4 già usato per il pallino), `prog1_titles`, `prog1_starts` (secondi dal
   1970), `prog2_titles`, `prog2_starts`. Fascia mancante: titolo `""` e inizio `0`. Titoli accorciati con la `short()`
   esistente (`MAX_TITLE=40`).
-- **Dimensione:** al massimo 20 canali × (2 titoli di 40 caratteri + 2 orari) ≈ 2,5 KB. `fit_size` taglia già prima le
-  trame e i cast dei film per restare sotto `MAX_JSON=15500`; deve tagliare solo quelli e mai i programmi (test).
+- **Dimensione:** l'app manda a ogni tile al massimo **2600 byte** (`X_BUDGET`): se film e programmi non ci stanno, taglia
+  tutte le liste alla stessa lunghezza (24, 16, 12, 8…). Misurato il 12/10 sulla guida vera: film 793 byte (12 film) +
+  programmi 1569 byte (16 canali) = 2258. Per lasciare margine i titoli dei programmi si accorciano a 30 caratteri
+  (`MAX_PROG_TITLE`). Con più di ~16 film la sera il taglio comune accorcia anche i film: limite noto, il tile mostra
+  quelli che arrivano. I 16 KB di HA (`MAX_JSON`, `fit_size`) restano il limite del database, non quello del tile;
+  `fit_size` taglia sempre prima le trame e i cast, mai i programmi.
 - **Compatibilità:** `date`, `updated`, `stale` e la cache restano come ora; la cache vecchia, senza i campi nuovi, si
   legge come "nessun programma". Lo stato del sensore (numero di film) e gli attributi esistenti non cambiano: dashboard
   e popup attuali continuano a funzionare.
@@ -53,6 +57,11 @@ che sembra vuota: mostra un pulsante **Aggiorna** che lancia lo script.
 - **Pagine:** i blocchi che entrano nel tile (colonne e righe calcolate come ora dalla dimensione) formano una pagina.
   Con più pagine, si passa alla successiva ogni 8 secondi, a rotazione; l'intestazione mostra `1/2`. Con una pagina sola
   niente rotazione e niente numero.
+- **Data del sensore:** l'app converte un attributo il cui nome finisce per `date` in secondi dal 1970 (la mezzanotte del
+  giorno, nel fuso di HA): il tile lo legge come numero e lo confronta con oggi con `tessera::days_from_today`. Per lo
+  stesso motivo `updated` resta un numero e `stale` un booleano.
+- **Intestazione:** in modalità Film a destra resta la data, come ora; in modalità Programmi dice "Programmi" e, con più
+  pagine, il numero (`Programmi 1/3`). La nota "Guida vecchia" ha la precedenza in entrambe.
 - **Tocco:** con dati validi alterna Film e Programmi. In stato senza dati (sotto) il tocco è Aggiorna. La modalità vive
   nel tile: dopo un riavvio dello schermo riparte da quella scelta nell'editor.
 - **Opzione del tile** `start` (scelta Film / Programmi, default Film): la modalità iniziale. Serve anche al bench per
