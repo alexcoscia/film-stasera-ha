@@ -89,3 +89,17 @@ python3 film_stasera.py --input guide.gzip # un file gia' scaricato
   puo' smettere di funzionare.
 - **NOVE, Discovery, Real Time e DMAX** non hanno programmi nella fonte, quindi non compaiono mai.
 - Gli orari di fine non esistono nella guida: solo l'inizio.
+
+## Programmi di prima e seconda serata
+
+Lo stesso sensore ha sei attributi in più, una voce per canale in ordine di numero del telecomando (liste della stessa
+lunghezza): `prog_channels`, `prog_groups` (il gruppo 1-4 del pallino), `prog1_titles` e `prog1_starts` (prima serata),
+`prog2_titles` e `prog2_starts` (seconda serata). Un inizio vale secondi dal 1970; una fascia mancante ha titolo vuoto e
+inizio 0. Un canale senza nessuna fascia non compare.
+
+- Prima serata: il primo programma di almeno 30 minuti che inizia tra le 21:00 e le 22:30. Seconda serata: il primo di
+  almeno 30 minuti che inizia tra le 23:00 e le 02:00 (del giorno dopo). Le costanti sono in testa allo script (`PRIME`,
+  `LATE`, `MIN_MINUTES`); l'ordine dei canali è `CHANNEL_ORDER`.
+- I titoli dei programmi sono al massimo 30 caratteri: l'app manda a ogni tile al massimo 2600 byte tra film e programmi.
+- Una cache scritta da una versione precedente (senza questi attributi) non è mai "fresca": al primo giro lo script
+  riscarica la guida.
