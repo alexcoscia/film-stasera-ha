@@ -185,10 +185,35 @@ def parse_ts(ts):
     return datetime.strptime(ts, "%Y%m%d%H%M%S %z")
 
 
+def drop_repeats(items):
+    """Il file ripete lo stesso canale con id diversi e orari che differiscono di pochi secondi: stesso titolo entro
+    DUP_WINDOW secondi e' lo stesso programma."""
+    out, last = [], {}
+    for it in sorted(items, key=lambda x: x["at"]):
+        prev = last.get(norm(it["title"]))
+        if prev is not None and it["at"] - prev < DUP_WINDOW:
+            continue
+        last[norm(it["title"])] = it["at"]
+        out.append(it)
+    return out
+
+
+def duration_minutes(el, start_aw):
+    """Durata di un <programme> in minuti, None se la fine manca o non si legge."""
+    stop = el.get("stop")
+    try:
+        return (parse_ts(stop) - start_aw).total_seconds() / 60 if stop else None
+    except ValueError:
+        return None
+
+
 def extract(path, day):
-    """Ritorna (film, statistiche). film: lista di dict per il giorno 'day' (data di Roma)."""
-    start_win = datetime(day.year, day.month, day.day, FROM_HOUR)
-    end_win = datetime(day.year, day.month, day.day) + timedelta(hours=TO_HOUR)
+    """Ritorna (film, programmi, statistiche) per il giorno 'day' (data di Roma). film: lista di dict dei film della
+    prima serata. programmi: le righe di build_programmes (prima e seconda serata di ogni canale)."""
+    midnight = datetime(day.year, day.month, day.day)
+    start_win = midnight + timedelta(hours=FROM_HOUR)
+    end_win = midnight + timedelta(hours=TO_HOUR)
+    progs = {}      # nome mostrato -> programmi tra PRIME[0] e LATE[1] (per la modalita' Programmi)
     channels = {}   # id file -> nome mostrato (solo i canali che ci interessano)
     seen = {}       # nome mostrato -> voci grezze
     stats = {"channels_in_file": 0, "programmes": 0, "per_channel": {n: 0 for n in CHANNELS},
@@ -206,7 +231,13 @@ def extract(path, day):
                 shown = channels.get(el.get("channel"))
                 if shown:
                     start_aw = parse_ts(el.get("start"))
-                    if start_win <= to_rome(start_aw) < end_win:
+                    local = to_rome(start_aw)
+                    minutes = (local - midnight).total_seconds() / 60
+                    if PRIME[0] <= minutes < LATE[1]:
+                        progs.setdefault(shown, []).append({
+                            "title": short(el.findtext("title")), "at": int(start_aw.timestamp()),
+                            "min": minutes, "dur": duration_minutes(el, start_aw)})
+                    if start_win <= local < end_win:
                         stats["evening"][shown] += 1
                         cats = [norm(c.text) for c in el.findall("category") if c.text]
                         if FILM_CATEGORIES.intersection(cats):
@@ -232,7 +263,8 @@ def extract(path, day):
             films.append(it)
             stats["per_channel"][shown] += 1
     films.sort(key=lambda x: (x["at"], x["channel"]))
-    return films, stats
+    programmes = build_programmes({name: drop_repeats(items) for name, items in progs.items()})
+    return films, programmes, stats
 
 
 def channel_rank(name):
@@ -322,19 +354,20 @@ def fetch_today(day, input_path):
             path = os.path.join(tmp, "guide.gzip")
             size = download(SOURCE_URL, path)
             print(f"scaricati {size} byte", file=sys.stderr)
-        films, stats = extract(path, day)
+        films, programmes, stats = extract(path, day)
     if stats["channels_in_file"] < 100 or stats["programmes"] < 10_000:
         raise RuntimeError(f"file anomalo ({stats['channels_in_file']} canali, {stats['programmes']} programmi)")
     print(f"{stats['channels_in_file']} canali, {stats['programmes']} programmi; film trovati: {len(films)}",
           file=sys.stderr)
     print("film per canale:", {n: c for n, c in stats["per_channel"].items() if c}, file=sys.stderr)
+    print(f"programmi: {len(programmes)} canali con almeno una fascia serale", file=sys.stderr)
     no_film = [n for n, c in stats["per_channel"].items() if c == 0 and stats["evening"][n] > 0]
     no_data = [n for n, c in stats["evening"].items() if c == 0]
     if no_film:
         print("canali senza film in serata:", ", ".join(no_film), file=sys.stderr)
     if no_data:
         print("ATTENZIONE, nessun programma in serata per:", ", ".join(no_data), file=sys.stderr)
-    return films
+    return films, programmes
 
 
 def read_key(path):
