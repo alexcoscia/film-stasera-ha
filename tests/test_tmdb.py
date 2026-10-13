@@ -13,8 +13,9 @@ import film_stasera as fs  # noqa: E402
 class FakeTmdb:
     """Finto TMDB: search per titolo cercato, movie per id. Registra le chiamate."""
 
-    def __init__(self, search=None, movies=None, fail=None):
+    def __init__(self, search=None, movies=None, fail=None, tv_search=None, tv=None):
         self.search, self.movies, self.fail = search or {}, movies or {}, fail
+        self.tv_search, self.tv = tv_search or {}, tv or {}
         self.calls = []
 
     def __call__(self, path, key, params, timeout=10):
@@ -23,6 +24,10 @@ class FakeTmdb:
             raise self.fail
         if path == "search/movie":
             return {"results": self.search.get(params["query"], [])}
+        if path == "search/tv":
+            return {"results": self.tv_search.get(params["query"], [])}
+        if path.startswith("tv/"):
+            return self.tv[int(path.split("/")[1])]
         return self.movies[int(path.split("/")[1])]
 
 
@@ -195,3 +200,111 @@ class CliTest(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+FBI = {"results": [{"id": 7, "name": "FBI: Most Wanted", "original_name": "FBI: Most Wanted"}]}
+FBI_SHOW = {"id": 7, "overview": "Una squadra  speciale.", "poster_path": "/fbi.jpg", "first_air_date": "2020-01-07",
+            "credits": {"cast": [{"name": f"Agente {i}"} for i in range(10)]}}
+
+
+def pd_of(**kw):
+    """Un'uscita con una prima e una seconda serata per due canali: Iris (un film dell'elenco) e Rai 1 (un programma)."""
+    base = dict(out_of("Sette strade al tramonto"), channels=["Iris"], starts=[1791919020],
+                pd_channels=["Iris", "Rai 1"], pd_groups=[2, 1], pd_logos=["", ""],
+                pd1_titles=["Sette strade al tramonto", "FBI: Most Wanted - Stag. 6 Ep. 3 - Titolo"],
+                pd1_starts=[1791919020, 1791918960], pd1_descs=["", "Trama guida"], pd1_casts=["", ""],
+                pd1_imgs=["http://sky/a.png", "http://sky/b.png"],
+                pd2_titles=["", ""], pd2_starts=[0, 0], pd2_descs=["", ""], pd2_casts=["", ""], pd2_imgs=["", ""])
+    base.update(kw)
+    return base
+
+
+class TvLookupTest(unittest.TestCase):
+    def test_pulisce_il_titolo(self):
+        for raw, want in (("Tutto l'amore che resta - Stag. 1 - Episodio 5", "Tutto l'amore che resta"),
+                          ("Filorosso - Stag. 2026 - Puntata del 13/10/2026", "Filorosso"),
+                          ("One Piece - Stag. 1 Ep. 50 - Ep. 50 - Zoro", "One Piece"),
+                          ("Boss in incognito 2026", "Boss in incognito"), ("X Factor 1^TV", "X Factor"), ("C.S.I. Miami", "C.S.I. Miami"),
+                          ("FBI: Most Wanted", "FBI: Most Wanted"), ("", "")):
+            self.assertEqual(fs.clean_prog_title(raw), want, raw)
+
+    def test_trova_la_serie(self):
+        d = fs.lookup_tv("FBI: Most Wanted", "k", FakeTmdb(tv_search={"FBI: Most Wanted": FBI["results"]}, tv={7: FBI_SHOW}))
+        self.assertEqual((d["id"], d["poster"], d["year"]), (7, "https://image.tmdb.org/t/p/w342/fbi.jpg", "2020"))
+        self.assertEqual(d["overview"], "Una squadra speciale.")
+        self.assertEqual(len(d["cast"].split(", ")), fs.MAX_CAST)
+
+    def test_puntini_e_spazi_non_contano(self):
+        r = [{"id": 7, "name": "CSI: Miami", "original_name": "CSI: Miami"}]
+        self.assertEqual(fs.lookup_tv("C.S.I. Miami", "k", FakeTmdb(tv_search={"C.S.I. Miami": r}, tv={7: FBI_SHOW}))["id"], 7)
+
+    def test_nessuna_corrispondenza_sicura(self):
+        wrong = [{"id": 9, "name": "Porta a Porta Kids", "original_name": "x"}]
+        fake = FakeTmdb(tv_search={"Porta a porta": wrong})
+        self.assertEqual(fs.lookup_tv("Porta a porta", "k", fake), {"id": 0})
+        self.assertEqual(len(fake.calls), 1)
+
+
+class ProgTargetsTest(unittest.TestCase):
+    def test_film_dell_elenco_e_serie(self):
+        t = fs.prog_targets(pd_of())
+        self.assertEqual(t[("pd1", 0)], (fs.key_of("Sette strade al tramonto"), "film", "Sette strade al tramonto"))
+        self.assertEqual(t[("pd1", 1)], ("tv:fbimostwanted", "tv", "FBI: Most Wanted"))
+
+    def test_fascia_vuota(self):
+        self.assertIsNone(fs.prog_targets(pd_of())[("pd2", 0)])
+
+
+class ProgEnrichTest(unittest.TestCase):
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.cache = os.path.join(self.tmp.name, "t.json")
+        self.fake = FakeTmdb({"Sette strade al tramonto": [{"id": 1, "title": "Sette strade al tramonto",
+                                                              "original_title": "x"}]}, {1: dict(JOB_MOVIE, poster_path="/film.jpg")},
+                             tv_search={"FBI: Most Wanted": FBI["results"]}, tv={7: FBI_SHOW})
+        self.ticks = iter(range(1000, 2000))
+
+    def tearDown(self):
+        self.tmp.cleanup()
+
+    def test_cerca_le_serie_e_riempie_la_cache(self):
+        fs.enrich(pd_of(), "k", self.cache, self.fake, lambda: next(self.ticks))
+        with open(self.cache, encoding="utf-8") as f:
+            cache = json.load(f)
+        self.assertEqual(cache["tv:fbimostwanted"]["poster"], "https://image.tmdb.org/t/p/w342/fbi.jpg")
+        self.assertIn("search/tv", [c[0] for c in self.fake.calls])
+
+    def test_non_cerca_due_volte(self):
+        fs.enrich(pd_of(), "k", self.cache, self.fake, lambda: next(self.ticks))
+        n = len(self.fake.calls)
+        fs.enrich(pd_of(), "k", self.cache, self.fake, lambda: next(self.ticks))
+        self.assertEqual(len(self.fake.calls), n)
+
+    def test_il_film_dell_elenco_non_si_cerca_come_serie(self):
+        fs.enrich(pd_of(), "k", self.cache, self.fake, lambda: next(self.ticks))
+        self.assertEqual([c[1]["query"] for c in self.fake.calls if c[0] == "search/tv"], ["FBI: Most Wanted"])
+
+    def test_locandine_al_posto_delle_copertine(self):
+        fs.enrich(pd_of(), "k", self.cache, self.fake, lambda: next(self.ticks))
+        pd = fs.with_tmdb_details(pd_of(), fs.load_dict(self.cache))
+        self.assertEqual(pd["pd1_imgs"], ["https://image.tmdb.org/t/p/w342/film.jpg", "https://image.tmdb.org/t/p/w342/fbi.jpg"])
+
+    def test_trama_della_guida_resta_e_cast_manca_si_riempie(self):
+        fs.enrich(pd_of(), "k", self.cache, self.fake, lambda: next(self.ticks))
+        pd = fs.with_tmdb_details(pd_of(), fs.load_dict(self.cache))
+        self.assertEqual(pd["pd1_descs"][1], "Trama guida")              # la guida c'e': resta
+        self.assertEqual(pd["pd1_descs"][0], "Una rapina a Venezia.")    # la guida non aveva nulla: TMDB
+        self.assertTrue(pd["pd1_casts"][1].startswith("Agente 0"))
+        self.assertEqual(len(pd["pd1_casts"][1].split(", ")), fs.MAX_PROG_CAST)
+
+    def test_senza_cache_restano_le_copertine_della_guida(self):
+        pd = fs.with_tmdb_details(pd_of(), {})
+        self.assertEqual(pd["pd1_imgs"], ["http://sky/a.png", "http://sky/b.png"])
+
+    def test_serie_non_trovata_non_cambia_nulla(self):
+        pd = fs.with_tmdb_details(pd_of(), {"tv:fbimostwanted": {"id": 0, "checked": 5}})
+        self.assertEqual(pd["pd1_imgs"][1], "http://sky/b.png")
+
+    def test_senza_chiave_nessuna_richiesta(self):
+        fs.enrich(pd_of(), "", self.cache, self.fake, lambda: next(self.ticks))
+        self.assertEqual(self.fake.calls, [])

@@ -503,6 +503,77 @@ def lookup(title, key, get=tmdb_get):
             "cast": ", ".join(cast), "year": (d.get("release_date") or "")[:4]}
 
 
+def compact_title(s):
+    """Titolo senza punteggiatura, maiuscole e spazi: 'C.S.I. Miami' e 'CSI: Miami' sono lo stesso."""
+    return norm_title(s).replace(" ", "")
+
+
+def clean_prog_title(title):
+    """'Boss in incognito - Stag. 2026 - Puntata del 13/10' -> 'Boss in incognito': il nome del programma, senza stagione
+    ne' episodio, per cercarlo su TMDB."""
+    t = re.split(r"\s+-\s+(?:Stag\.|Puntata|Episodio|Ep\.)", title or "")[0]
+    t = re.sub(r"\s+Stag\. .*$", "", t).strip()
+    t = re.sub(r"\s+\d+\^\s*TV$", "", t)           # 'X Factor 1^TV': la prima visione
+    return re.sub(r"\s+(?:19|20)\d\d$", "", t)    # 'Boss in incognito 2026': l'anno e' dell'edizione
+
+
+def lookup_tv(title, key, get=tmdb_get):
+    """Come lookup(), per le serie e i programmi (search/tv): un risultato solo se il nome coincide (senza punteggiatura ne'
+    spazi) con il nome italiano o originale. {"id": 0} se non c'e'. Solleva l'errore di rete."""
+    results = get("search/tv", key, {"query": title, "language": "it-IT", "include_adult": "false"}).get("results", [])[:5]
+    want = compact_title(title)
+    hit = next((r for r in results if want in (compact_title(r.get("name")), compact_title(r.get("original_name")))), None)
+    if not hit:
+        return {"id": 0}
+    d = get(f"tv/{hit['id']}", key, {"language": "it-IT", "append_to_response": "credits"})
+    cast = [p["name"] for p in (d.get("credits") or {}).get("cast", [])[:MAX_CAST] if p.get("name")]
+    text = " ".join((d.get("overview") or "").split())
+    if len(text) > MAX_OVERVIEW:
+        text = text[:MAX_OVERVIEW - 1].rstrip() + "…"
+    poster = d.get("poster_path") or ""
+    return {"id": int(d["id"]), "poster": TMDB_IMG + poster if poster else "", "overview": text,
+            "cast": ", ".join(cast), "year": (d.get("first_air_date") or "")[:4]}
+
+
+def prog_targets(c):
+    """Per ogni programma di prima e seconda serata di `c` (chiavi pd*): (chiave_cache, tipo, titolo da cercare) oppure None
+    se la fascia e' vuota. Un programma che e' anche un film dell'elenco usa il dettaglio di quel film (tipo 'film', la ricerca
+    l'ha gia' fatta enrich); gli altri si cercano come serie ("tv")."""
+    films = list(zip(c.get("titles", []), c.get("channels", []), c.get("starts", [])))
+    out = {}
+    for slot in PD_SLOTS:
+        starts = c.get(f"{slot}_starts", [])
+        for i, start in enumerate(starts):
+            if not start:
+                out[(slot, i)] = None
+                continue
+            chan = c["pd_channels"][i]
+            film = next((t for t, ch, st in films if ch == chan and abs(st - start) <= 60), None)
+            if film is not None:
+                out[(slot, i)] = (key_of(film), "film", film)
+            else:
+                name = clean_prog_title(c[f"{slot}_titles"][i])
+                out[(slot, i)] = ("tv:" + compact_title(name), "tv", name) if name else None
+    return out
+
+
+def with_tmdb_details(c, tcache):
+    """Gli attributi pd* di `c` con le locandine di TMDB al posto delle copertine della guida, dove la cache di TMDB ne ha
+    una. Trama e cast di TMDB entrano solo dove la guida non ne ha. Senza rete: legge solo la cache."""
+    pd = {k: list(c.get(k, [])) for k in PD_KEYS}
+    for (slot, i), target in prog_targets(c).items():
+        hit = tcache.get(target[0]) if target else None
+        if not (isinstance(hit, dict) and hit.get("id")):
+            continue
+        if hit.get("poster"):
+            pd[f"{slot}_imgs"][i] = hit["poster"]
+        if not pd[f"{slot}_casts"][i] and hit.get("cast"):
+            pd[f"{slot}_casts"][i] = ", ".join(hit["cast"].split(", ")[:MAX_PROG_CAST])
+        if not pd[f"{slot}_descs"][i] and hit.get("overview"):
+            pd[f"{slot}_descs"][i] = hit["overview"][:MAX_PROG_DESC]
+    return fit_details(pd)
+
+
 def load_dict(path):
     try:
         with open(path, encoding="utf-8") as f:
@@ -545,6 +616,21 @@ def enrich(out, key, cache_path, get=tmdb_get, clock=time.time, write=True):
         if isinstance(hit, dict):
             hit["seen"] = int(clock())
         details.append(hit if isinstance(hit, dict) and hit.get("id") else empty)
+    # I programmi di prima e seconda serata che non sono film dell'elenco: cercati come serie, per le locandine del secondo sensore.
+    for target in prog_targets(out).values():
+        if not target or target[1] != "tv":
+            continue
+        k, _, name = target
+        hit = cache.get(k)
+        known = isinstance(hit, dict) and (hit.get("id") or clock() - hit.get("checked", 0) < TMDB_MISS_DAYS * 86400)
+        if not known and key and clock() - started < TMDB_BUDGET:
+            try:
+                hit = dict(lookup_tv(name, key, get), checked=int(clock()))
+                cache[k] = hit
+            except Exception as e:
+                print(f"TMDB: {name[:30]}: {type(e).__name__}", file=sys.stderr)
+        if isinstance(hit, dict):
+            hit["seen"] = int(clock())
     if write and key:
         limit = clock() - TMDB_KEEP_DAYS * 86400
         cache = {k: v for k, v in cache.items() if isinstance(v, dict) and v.get("seen", 0) >= limit}
@@ -578,9 +664,9 @@ def main():
     cache = load_cache(args.cache)
     if args.details:
         c = cache or {}
-        empty = {k: [] for k in PD_KEYS}
-        print(json.dumps({"count": len(c.get("pd_channels", [])), "date": c.get("date", ""), "updated": c.get("updated", 0),
-                          **{k: c.get(k, empty[k]) for k in PD_KEYS}}, ensure_ascii=False, separators=(",", ":")))
+        pd = with_tmdb_details(c, load_dict(args.tmdb_cache)) if "pd_channels" in c else {k: [] for k in PD_KEYS}
+        print(json.dumps({"count": len(pd["pd_channels"]), "date": c.get("date", ""), "updated": c.get("updated", 0), **pd},
+                         ensure_ascii=False, separators=(",", ":")))
         return 0
     out = None
 
