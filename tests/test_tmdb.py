@@ -181,7 +181,7 @@ class CliTest(unittest.TestCase):
             with open(cache, "w", encoding="utf-8") as f:
                 import time as _t
                 # una cache buona e di oggi: ha anche i programmi, altrimenti lo script la ritiene da rifare
-                json.dump(dict(out_of("La giuria", "Boh"), updated=int(_t.time()), **{k: [] for k in fs.PROG_KEYS}), f)
+                json.dump(dict(out_of("La giuria", "Boh"), updated=int(_t.time()), **{k: [] for k in fs.PROG_KEYS + fs.PD_KEYS}), f)
             r = subprocess.run([sys.executable, "-I", os.path.join(os.path.dirname(fs.__file__), "film_stasera.py"),
                                 "--date", "2026-10-11", "--cache", cache, "--logos-dir", tmp,
                                 "--tmdb-key-file", os.path.join(tmp, "manca.key"),

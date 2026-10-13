@@ -595,223 +595,1013 @@
        }
       },
       {
+       "type": "heading",
+       "heading": "Prima serata (dalle 21:00)",
+       "heading_style": "subtitle"
+      },
+      {
        "type": "custom:button-card",
        "template": "prog_row",
-       "entity": "sensor.film_stasera",
+       "entity": "sensor.film_stasera_programmi",
        "variables": {
+        "s": 1,
         "i": 0
        },
        "grid_options": {
         "columns": "full"
+       },
+       "tap_action": {
+        "action": "fire-dom-event",
+        "browser_mod": {
+         "service": "browser_mod.popup",
+         "data": {
+          "dismissable": true,
+          "content": {
+           "type": "markdown",
+           "content": "{%- set a = states.sensor.film_stasera_programmi.attributes -%}\n{%- set k = 0 -%}\n{%- set S = a.pd1_starts | default([]) -%}{%- set T = a.pd1_titles | default([]) -%}\n{%- set D = a.pd1_descs | default([]) -%}{%- set C = a.pd1_casts | default([]) -%}{%- set I = a.pd1_imgs | default([]) -%}\n{%- if S | length > k and S[k] -%}\n{% if I[k] %}<img src=\"{{ I[k] }}\" width=\"200\" style=\"float:left;margin:0 16px 8px 0;border-radius:8px\">{% endif %}\n**{{ T[k] }}**\n\n{{ a.pd_channels[k] }} · {{ S[k] | timestamp_custom('%H:%M') }}\n\n{% if D[k] %}{{ D[k] }}{% else %}Nessuna trama disponibile.{% endif %}\n\n{% if C[k] %}**Cast:** {{ C[k] }}{% endif %}\n\n<br style=\"clear:both\">\n{%- else -%}\nProgramma non piu' in elenco.\n{%- endif -%}"
+          }
+         }
+        }
        }
       },
       {
        "type": "custom:button-card",
        "template": "prog_row",
-       "entity": "sensor.film_stasera",
+       "entity": "sensor.film_stasera_programmi",
        "variables": {
+        "s": 1,
         "i": 1
        },
        "grid_options": {
         "columns": "full"
+       },
+       "tap_action": {
+        "action": "fire-dom-event",
+        "browser_mod": {
+         "service": "browser_mod.popup",
+         "data": {
+          "dismissable": true,
+          "content": {
+           "type": "markdown",
+           "content": "{%- set a = states.sensor.film_stasera_programmi.attributes -%}\n{%- set k = 1 -%}\n{%- set S = a.pd1_starts | default([]) -%}{%- set T = a.pd1_titles | default([]) -%}\n{%- set D = a.pd1_descs | default([]) -%}{%- set C = a.pd1_casts | default([]) -%}{%- set I = a.pd1_imgs | default([]) -%}\n{%- if S | length > k and S[k] -%}\n{% if I[k] %}<img src=\"{{ I[k] }}\" width=\"200\" style=\"float:left;margin:0 16px 8px 0;border-radius:8px\">{% endif %}\n**{{ T[k] }}**\n\n{{ a.pd_channels[k] }} · {{ S[k] | timestamp_custom('%H:%M') }}\n\n{% if D[k] %}{{ D[k] }}{% else %}Nessuna trama disponibile.{% endif %}\n\n{% if C[k] %}**Cast:** {{ C[k] }}{% endif %}\n\n<br style=\"clear:both\">\n{%- else -%}\nProgramma non piu' in elenco.\n{%- endif -%}"
+          }
+         }
+        }
        }
       },
       {
        "type": "custom:button-card",
        "template": "prog_row",
-       "entity": "sensor.film_stasera",
+       "entity": "sensor.film_stasera_programmi",
        "variables": {
+        "s": 1,
         "i": 2
        },
        "grid_options": {
         "columns": "full"
+       },
+       "tap_action": {
+        "action": "fire-dom-event",
+        "browser_mod": {
+         "service": "browser_mod.popup",
+         "data": {
+          "dismissable": true,
+          "content": {
+           "type": "markdown",
+           "content": "{%- set a = states.sensor.film_stasera_programmi.attributes -%}\n{%- set k = 2 -%}\n{%- set S = a.pd1_starts | default([]) -%}{%- set T = a.pd1_titles | default([]) -%}\n{%- set D = a.pd1_descs | default([]) -%}{%- set C = a.pd1_casts | default([]) -%}{%- set I = a.pd1_imgs | default([]) -%}\n{%- if S | length > k and S[k] -%}\n{% if I[k] %}<img src=\"{{ I[k] }}\" width=\"200\" style=\"float:left;margin:0 16px 8px 0;border-radius:8px\">{% endif %}\n**{{ T[k] }}**\n\n{{ a.pd_channels[k] }} · {{ S[k] | timestamp_custom('%H:%M') }}\n\n{% if D[k] %}{{ D[k] }}{% else %}Nessuna trama disponibile.{% endif %}\n\n{% if C[k] %}**Cast:** {{ C[k] }}{% endif %}\n\n<br style=\"clear:both\">\n{%- else -%}\nProgramma non piu' in elenco.\n{%- endif -%}"
+          }
+         }
+        }
        }
       },
       {
        "type": "custom:button-card",
        "template": "prog_row",
-       "entity": "sensor.film_stasera",
+       "entity": "sensor.film_stasera_programmi",
        "variables": {
+        "s": 1,
         "i": 3
        },
        "grid_options": {
         "columns": "full"
+       },
+       "tap_action": {
+        "action": "fire-dom-event",
+        "browser_mod": {
+         "service": "browser_mod.popup",
+         "data": {
+          "dismissable": true,
+          "content": {
+           "type": "markdown",
+           "content": "{%- set a = states.sensor.film_stasera_programmi.attributes -%}\n{%- set k = 3 -%}\n{%- set S = a.pd1_starts | default([]) -%}{%- set T = a.pd1_titles | default([]) -%}\n{%- set D = a.pd1_descs | default([]) -%}{%- set C = a.pd1_casts | default([]) -%}{%- set I = a.pd1_imgs | default([]) -%}\n{%- if S | length > k and S[k] -%}\n{% if I[k] %}<img src=\"{{ I[k] }}\" width=\"200\" style=\"float:left;margin:0 16px 8px 0;border-radius:8px\">{% endif %}\n**{{ T[k] }}**\n\n{{ a.pd_channels[k] }} · {{ S[k] | timestamp_custom('%H:%M') }}\n\n{% if D[k] %}{{ D[k] }}{% else %}Nessuna trama disponibile.{% endif %}\n\n{% if C[k] %}**Cast:** {{ C[k] }}{% endif %}\n\n<br style=\"clear:both\">\n{%- else -%}\nProgramma non piu' in elenco.\n{%- endif -%}"
+          }
+         }
+        }
        }
       },
       {
        "type": "custom:button-card",
        "template": "prog_row",
-       "entity": "sensor.film_stasera",
+       "entity": "sensor.film_stasera_programmi",
        "variables": {
+        "s": 1,
         "i": 4
        },
        "grid_options": {
         "columns": "full"
+       },
+       "tap_action": {
+        "action": "fire-dom-event",
+        "browser_mod": {
+         "service": "browser_mod.popup",
+         "data": {
+          "dismissable": true,
+          "content": {
+           "type": "markdown",
+           "content": "{%- set a = states.sensor.film_stasera_programmi.attributes -%}\n{%- set k = 4 -%}\n{%- set S = a.pd1_starts | default([]) -%}{%- set T = a.pd1_titles | default([]) -%}\n{%- set D = a.pd1_descs | default([]) -%}{%- set C = a.pd1_casts | default([]) -%}{%- set I = a.pd1_imgs | default([]) -%}\n{%- if S | length > k and S[k] -%}\n{% if I[k] %}<img src=\"{{ I[k] }}\" width=\"200\" style=\"float:left;margin:0 16px 8px 0;border-radius:8px\">{% endif %}\n**{{ T[k] }}**\n\n{{ a.pd_channels[k] }} · {{ S[k] | timestamp_custom('%H:%M') }}\n\n{% if D[k] %}{{ D[k] }}{% else %}Nessuna trama disponibile.{% endif %}\n\n{% if C[k] %}**Cast:** {{ C[k] }}{% endif %}\n\n<br style=\"clear:both\">\n{%- else -%}\nProgramma non piu' in elenco.\n{%- endif -%}"
+          }
+         }
+        }
        }
       },
       {
        "type": "custom:button-card",
        "template": "prog_row",
-       "entity": "sensor.film_stasera",
+       "entity": "sensor.film_stasera_programmi",
        "variables": {
+        "s": 1,
         "i": 5
        },
        "grid_options": {
         "columns": "full"
+       },
+       "tap_action": {
+        "action": "fire-dom-event",
+        "browser_mod": {
+         "service": "browser_mod.popup",
+         "data": {
+          "dismissable": true,
+          "content": {
+           "type": "markdown",
+           "content": "{%- set a = states.sensor.film_stasera_programmi.attributes -%}\n{%- set k = 5 -%}\n{%- set S = a.pd1_starts | default([]) -%}{%- set T = a.pd1_titles | default([]) -%}\n{%- set D = a.pd1_descs | default([]) -%}{%- set C = a.pd1_casts | default([]) -%}{%- set I = a.pd1_imgs | default([]) -%}\n{%- if S | length > k and S[k] -%}\n{% if I[k] %}<img src=\"{{ I[k] }}\" width=\"200\" style=\"float:left;margin:0 16px 8px 0;border-radius:8px\">{% endif %}\n**{{ T[k] }}**\n\n{{ a.pd_channels[k] }} · {{ S[k] | timestamp_custom('%H:%M') }}\n\n{% if D[k] %}{{ D[k] }}{% else %}Nessuna trama disponibile.{% endif %}\n\n{% if C[k] %}**Cast:** {{ C[k] }}{% endif %}\n\n<br style=\"clear:both\">\n{%- else -%}\nProgramma non piu' in elenco.\n{%- endif -%}"
+          }
+         }
+        }
        }
       },
       {
        "type": "custom:button-card",
        "template": "prog_row",
-       "entity": "sensor.film_stasera",
+       "entity": "sensor.film_stasera_programmi",
        "variables": {
+        "s": 1,
         "i": 6
        },
        "grid_options": {
         "columns": "full"
+       },
+       "tap_action": {
+        "action": "fire-dom-event",
+        "browser_mod": {
+         "service": "browser_mod.popup",
+         "data": {
+          "dismissable": true,
+          "content": {
+           "type": "markdown",
+           "content": "{%- set a = states.sensor.film_stasera_programmi.attributes -%}\n{%- set k = 6 -%}\n{%- set S = a.pd1_starts | default([]) -%}{%- set T = a.pd1_titles | default([]) -%}\n{%- set D = a.pd1_descs | default([]) -%}{%- set C = a.pd1_casts | default([]) -%}{%- set I = a.pd1_imgs | default([]) -%}\n{%- if S | length > k and S[k] -%}\n{% if I[k] %}<img src=\"{{ I[k] }}\" width=\"200\" style=\"float:left;margin:0 16px 8px 0;border-radius:8px\">{% endif %}\n**{{ T[k] }}**\n\n{{ a.pd_channels[k] }} · {{ S[k] | timestamp_custom('%H:%M') }}\n\n{% if D[k] %}{{ D[k] }}{% else %}Nessuna trama disponibile.{% endif %}\n\n{% if C[k] %}**Cast:** {{ C[k] }}{% endif %}\n\n<br style=\"clear:both\">\n{%- else -%}\nProgramma non piu' in elenco.\n{%- endif -%}"
+          }
+         }
+        }
        }
       },
       {
        "type": "custom:button-card",
        "template": "prog_row",
-       "entity": "sensor.film_stasera",
+       "entity": "sensor.film_stasera_programmi",
        "variables": {
+        "s": 1,
         "i": 7
        },
        "grid_options": {
         "columns": "full"
+       },
+       "tap_action": {
+        "action": "fire-dom-event",
+        "browser_mod": {
+         "service": "browser_mod.popup",
+         "data": {
+          "dismissable": true,
+          "content": {
+           "type": "markdown",
+           "content": "{%- set a = states.sensor.film_stasera_programmi.attributes -%}\n{%- set k = 7 -%}\n{%- set S = a.pd1_starts | default([]) -%}{%- set T = a.pd1_titles | default([]) -%}\n{%- set D = a.pd1_descs | default([]) -%}{%- set C = a.pd1_casts | default([]) -%}{%- set I = a.pd1_imgs | default([]) -%}\n{%- if S | length > k and S[k] -%}\n{% if I[k] %}<img src=\"{{ I[k] }}\" width=\"200\" style=\"float:left;margin:0 16px 8px 0;border-radius:8px\">{% endif %}\n**{{ T[k] }}**\n\n{{ a.pd_channels[k] }} · {{ S[k] | timestamp_custom('%H:%M') }}\n\n{% if D[k] %}{{ D[k] }}{% else %}Nessuna trama disponibile.{% endif %}\n\n{% if C[k] %}**Cast:** {{ C[k] }}{% endif %}\n\n<br style=\"clear:both\">\n{%- else -%}\nProgramma non piu' in elenco.\n{%- endif -%}"
+          }
+         }
+        }
        }
       },
       {
        "type": "custom:button-card",
        "template": "prog_row",
-       "entity": "sensor.film_stasera",
+       "entity": "sensor.film_stasera_programmi",
        "variables": {
+        "s": 1,
         "i": 8
        },
        "grid_options": {
         "columns": "full"
+       },
+       "tap_action": {
+        "action": "fire-dom-event",
+        "browser_mod": {
+         "service": "browser_mod.popup",
+         "data": {
+          "dismissable": true,
+          "content": {
+           "type": "markdown",
+           "content": "{%- set a = states.sensor.film_stasera_programmi.attributes -%}\n{%- set k = 8 -%}\n{%- set S = a.pd1_starts | default([]) -%}{%- set T = a.pd1_titles | default([]) -%}\n{%- set D = a.pd1_descs | default([]) -%}{%- set C = a.pd1_casts | default([]) -%}{%- set I = a.pd1_imgs | default([]) -%}\n{%- if S | length > k and S[k] -%}\n{% if I[k] %}<img src=\"{{ I[k] }}\" width=\"200\" style=\"float:left;margin:0 16px 8px 0;border-radius:8px\">{% endif %}\n**{{ T[k] }}**\n\n{{ a.pd_channels[k] }} · {{ S[k] | timestamp_custom('%H:%M') }}\n\n{% if D[k] %}{{ D[k] }}{% else %}Nessuna trama disponibile.{% endif %}\n\n{% if C[k] %}**Cast:** {{ C[k] }}{% endif %}\n\n<br style=\"clear:both\">\n{%- else -%}\nProgramma non piu' in elenco.\n{%- endif -%}"
+          }
+         }
+        }
        }
       },
       {
        "type": "custom:button-card",
        "template": "prog_row",
-       "entity": "sensor.film_stasera",
+       "entity": "sensor.film_stasera_programmi",
        "variables": {
+        "s": 1,
         "i": 9
        },
        "grid_options": {
         "columns": "full"
+       },
+       "tap_action": {
+        "action": "fire-dom-event",
+        "browser_mod": {
+         "service": "browser_mod.popup",
+         "data": {
+          "dismissable": true,
+          "content": {
+           "type": "markdown",
+           "content": "{%- set a = states.sensor.film_stasera_programmi.attributes -%}\n{%- set k = 9 -%}\n{%- set S = a.pd1_starts | default([]) -%}{%- set T = a.pd1_titles | default([]) -%}\n{%- set D = a.pd1_descs | default([]) -%}{%- set C = a.pd1_casts | default([]) -%}{%- set I = a.pd1_imgs | default([]) -%}\n{%- if S | length > k and S[k] -%}\n{% if I[k] %}<img src=\"{{ I[k] }}\" width=\"200\" style=\"float:left;margin:0 16px 8px 0;border-radius:8px\">{% endif %}\n**{{ T[k] }}**\n\n{{ a.pd_channels[k] }} · {{ S[k] | timestamp_custom('%H:%M') }}\n\n{% if D[k] %}{{ D[k] }}{% else %}Nessuna trama disponibile.{% endif %}\n\n{% if C[k] %}**Cast:** {{ C[k] }}{% endif %}\n\n<br style=\"clear:both\">\n{%- else -%}\nProgramma non piu' in elenco.\n{%- endif -%}"
+          }
+         }
+        }
        }
       },
       {
        "type": "custom:button-card",
        "template": "prog_row",
-       "entity": "sensor.film_stasera",
+       "entity": "sensor.film_stasera_programmi",
        "variables": {
+        "s": 1,
         "i": 10
        },
        "grid_options": {
         "columns": "full"
+       },
+       "tap_action": {
+        "action": "fire-dom-event",
+        "browser_mod": {
+         "service": "browser_mod.popup",
+         "data": {
+          "dismissable": true,
+          "content": {
+           "type": "markdown",
+           "content": "{%- set a = states.sensor.film_stasera_programmi.attributes -%}\n{%- set k = 10 -%}\n{%- set S = a.pd1_starts | default([]) -%}{%- set T = a.pd1_titles | default([]) -%}\n{%- set D = a.pd1_descs | default([]) -%}{%- set C = a.pd1_casts | default([]) -%}{%- set I = a.pd1_imgs | default([]) -%}\n{%- if S | length > k and S[k] -%}\n{% if I[k] %}<img src=\"{{ I[k] }}\" width=\"200\" style=\"float:left;margin:0 16px 8px 0;border-radius:8px\">{% endif %}\n**{{ T[k] }}**\n\n{{ a.pd_channels[k] }} · {{ S[k] | timestamp_custom('%H:%M') }}\n\n{% if D[k] %}{{ D[k] }}{% else %}Nessuna trama disponibile.{% endif %}\n\n{% if C[k] %}**Cast:** {{ C[k] }}{% endif %}\n\n<br style=\"clear:both\">\n{%- else -%}\nProgramma non piu' in elenco.\n{%- endif -%}"
+          }
+         }
+        }
        }
       },
       {
        "type": "custom:button-card",
        "template": "prog_row",
-       "entity": "sensor.film_stasera",
+       "entity": "sensor.film_stasera_programmi",
        "variables": {
+        "s": 1,
         "i": 11
        },
        "grid_options": {
         "columns": "full"
+       },
+       "tap_action": {
+        "action": "fire-dom-event",
+        "browser_mod": {
+         "service": "browser_mod.popup",
+         "data": {
+          "dismissable": true,
+          "content": {
+           "type": "markdown",
+           "content": "{%- set a = states.sensor.film_stasera_programmi.attributes -%}\n{%- set k = 11 -%}\n{%- set S = a.pd1_starts | default([]) -%}{%- set T = a.pd1_titles | default([]) -%}\n{%- set D = a.pd1_descs | default([]) -%}{%- set C = a.pd1_casts | default([]) -%}{%- set I = a.pd1_imgs | default([]) -%}\n{%- if S | length > k and S[k] -%}\n{% if I[k] %}<img src=\"{{ I[k] }}\" width=\"200\" style=\"float:left;margin:0 16px 8px 0;border-radius:8px\">{% endif %}\n**{{ T[k] }}**\n\n{{ a.pd_channels[k] }} · {{ S[k] | timestamp_custom('%H:%M') }}\n\n{% if D[k] %}{{ D[k] }}{% else %}Nessuna trama disponibile.{% endif %}\n\n{% if C[k] %}**Cast:** {{ C[k] }}{% endif %}\n\n<br style=\"clear:both\">\n{%- else -%}\nProgramma non piu' in elenco.\n{%- endif -%}"
+          }
+         }
+        }
        }
       },
       {
        "type": "custom:button-card",
        "template": "prog_row",
-       "entity": "sensor.film_stasera",
+       "entity": "sensor.film_stasera_programmi",
        "variables": {
+        "s": 1,
         "i": 12
        },
        "grid_options": {
         "columns": "full"
+       },
+       "tap_action": {
+        "action": "fire-dom-event",
+        "browser_mod": {
+         "service": "browser_mod.popup",
+         "data": {
+          "dismissable": true,
+          "content": {
+           "type": "markdown",
+           "content": "{%- set a = states.sensor.film_stasera_programmi.attributes -%}\n{%- set k = 12 -%}\n{%- set S = a.pd1_starts | default([]) -%}{%- set T = a.pd1_titles | default([]) -%}\n{%- set D = a.pd1_descs | default([]) -%}{%- set C = a.pd1_casts | default([]) -%}{%- set I = a.pd1_imgs | default([]) -%}\n{%- if S | length > k and S[k] -%}\n{% if I[k] %}<img src=\"{{ I[k] }}\" width=\"200\" style=\"float:left;margin:0 16px 8px 0;border-radius:8px\">{% endif %}\n**{{ T[k] }}**\n\n{{ a.pd_channels[k] }} · {{ S[k] | timestamp_custom('%H:%M') }}\n\n{% if D[k] %}{{ D[k] }}{% else %}Nessuna trama disponibile.{% endif %}\n\n{% if C[k] %}**Cast:** {{ C[k] }}{% endif %}\n\n<br style=\"clear:both\">\n{%- else -%}\nProgramma non piu' in elenco.\n{%- endif -%}"
+          }
+         }
+        }
        }
       },
       {
        "type": "custom:button-card",
        "template": "prog_row",
-       "entity": "sensor.film_stasera",
+       "entity": "sensor.film_stasera_programmi",
        "variables": {
+        "s": 1,
         "i": 13
        },
        "grid_options": {
         "columns": "full"
+       },
+       "tap_action": {
+        "action": "fire-dom-event",
+        "browser_mod": {
+         "service": "browser_mod.popup",
+         "data": {
+          "dismissable": true,
+          "content": {
+           "type": "markdown",
+           "content": "{%- set a = states.sensor.film_stasera_programmi.attributes -%}\n{%- set k = 13 -%}\n{%- set S = a.pd1_starts | default([]) -%}{%- set T = a.pd1_titles | default([]) -%}\n{%- set D = a.pd1_descs | default([]) -%}{%- set C = a.pd1_casts | default([]) -%}{%- set I = a.pd1_imgs | default([]) -%}\n{%- if S | length > k and S[k] -%}\n{% if I[k] %}<img src=\"{{ I[k] }}\" width=\"200\" style=\"float:left;margin:0 16px 8px 0;border-radius:8px\">{% endif %}\n**{{ T[k] }}**\n\n{{ a.pd_channels[k] }} · {{ S[k] | timestamp_custom('%H:%M') }}\n\n{% if D[k] %}{{ D[k] }}{% else %}Nessuna trama disponibile.{% endif %}\n\n{% if C[k] %}**Cast:** {{ C[k] }}{% endif %}\n\n<br style=\"clear:both\">\n{%- else -%}\nProgramma non piu' in elenco.\n{%- endif -%}"
+          }
+         }
+        }
        }
       },
       {
        "type": "custom:button-card",
        "template": "prog_row",
-       "entity": "sensor.film_stasera",
+       "entity": "sensor.film_stasera_programmi",
        "variables": {
+        "s": 1,
         "i": 14
        },
        "grid_options": {
         "columns": "full"
+       },
+       "tap_action": {
+        "action": "fire-dom-event",
+        "browser_mod": {
+         "service": "browser_mod.popup",
+         "data": {
+          "dismissable": true,
+          "content": {
+           "type": "markdown",
+           "content": "{%- set a = states.sensor.film_stasera_programmi.attributes -%}\n{%- set k = 14 -%}\n{%- set S = a.pd1_starts | default([]) -%}{%- set T = a.pd1_titles | default([]) -%}\n{%- set D = a.pd1_descs | default([]) -%}{%- set C = a.pd1_casts | default([]) -%}{%- set I = a.pd1_imgs | default([]) -%}\n{%- if S | length > k and S[k] -%}\n{% if I[k] %}<img src=\"{{ I[k] }}\" width=\"200\" style=\"float:left;margin:0 16px 8px 0;border-radius:8px\">{% endif %}\n**{{ T[k] }}**\n\n{{ a.pd_channels[k] }} · {{ S[k] | timestamp_custom('%H:%M') }}\n\n{% if D[k] %}{{ D[k] }}{% else %}Nessuna trama disponibile.{% endif %}\n\n{% if C[k] %}**Cast:** {{ C[k] }}{% endif %}\n\n<br style=\"clear:both\">\n{%- else -%}\nProgramma non piu' in elenco.\n{%- endif -%}"
+          }
+         }
+        }
        }
       },
       {
        "type": "custom:button-card",
        "template": "prog_row",
-       "entity": "sensor.film_stasera",
+       "entity": "sensor.film_stasera_programmi",
        "variables": {
+        "s": 1,
         "i": 15
        },
        "grid_options": {
         "columns": "full"
+       },
+       "tap_action": {
+        "action": "fire-dom-event",
+        "browser_mod": {
+         "service": "browser_mod.popup",
+         "data": {
+          "dismissable": true,
+          "content": {
+           "type": "markdown",
+           "content": "{%- set a = states.sensor.film_stasera_programmi.attributes -%}\n{%- set k = 15 -%}\n{%- set S = a.pd1_starts | default([]) -%}{%- set T = a.pd1_titles | default([]) -%}\n{%- set D = a.pd1_descs | default([]) -%}{%- set C = a.pd1_casts | default([]) -%}{%- set I = a.pd1_imgs | default([]) -%}\n{%- if S | length > k and S[k] -%}\n{% if I[k] %}<img src=\"{{ I[k] }}\" width=\"200\" style=\"float:left;margin:0 16px 8px 0;border-radius:8px\">{% endif %}\n**{{ T[k] }}**\n\n{{ a.pd_channels[k] }} · {{ S[k] | timestamp_custom('%H:%M') }}\n\n{% if D[k] %}{{ D[k] }}{% else %}Nessuna trama disponibile.{% endif %}\n\n{% if C[k] %}**Cast:** {{ C[k] }}{% endif %}\n\n<br style=\"clear:both\">\n{%- else -%}\nProgramma non piu' in elenco.\n{%- endif -%}"
+          }
+         }
+        }
        }
       },
       {
        "type": "custom:button-card",
        "template": "prog_row",
-       "entity": "sensor.film_stasera",
+       "entity": "sensor.film_stasera_programmi",
        "variables": {
+        "s": 1,
         "i": 16
        },
        "grid_options": {
         "columns": "full"
+       },
+       "tap_action": {
+        "action": "fire-dom-event",
+        "browser_mod": {
+         "service": "browser_mod.popup",
+         "data": {
+          "dismissable": true,
+          "content": {
+           "type": "markdown",
+           "content": "{%- set a = states.sensor.film_stasera_programmi.attributes -%}\n{%- set k = 16 -%}\n{%- set S = a.pd1_starts | default([]) -%}{%- set T = a.pd1_titles | default([]) -%}\n{%- set D = a.pd1_descs | default([]) -%}{%- set C = a.pd1_casts | default([]) -%}{%- set I = a.pd1_imgs | default([]) -%}\n{%- if S | length > k and S[k] -%}\n{% if I[k] %}<img src=\"{{ I[k] }}\" width=\"200\" style=\"float:left;margin:0 16px 8px 0;border-radius:8px\">{% endif %}\n**{{ T[k] }}**\n\n{{ a.pd_channels[k] }} · {{ S[k] | timestamp_custom('%H:%M') }}\n\n{% if D[k] %}{{ D[k] }}{% else %}Nessuna trama disponibile.{% endif %}\n\n{% if C[k] %}**Cast:** {{ C[k] }}{% endif %}\n\n<br style=\"clear:both\">\n{%- else -%}\nProgramma non piu' in elenco.\n{%- endif -%}"
+          }
+         }
+        }
        }
       },
       {
        "type": "custom:button-card",
        "template": "prog_row",
-       "entity": "sensor.film_stasera",
+       "entity": "sensor.film_stasera_programmi",
        "variables": {
+        "s": 1,
         "i": 17
        },
        "grid_options": {
         "columns": "full"
+       },
+       "tap_action": {
+        "action": "fire-dom-event",
+        "browser_mod": {
+         "service": "browser_mod.popup",
+         "data": {
+          "dismissable": true,
+          "content": {
+           "type": "markdown",
+           "content": "{%- set a = states.sensor.film_stasera_programmi.attributes -%}\n{%- set k = 17 -%}\n{%- set S = a.pd1_starts | default([]) -%}{%- set T = a.pd1_titles | default([]) -%}\n{%- set D = a.pd1_descs | default([]) -%}{%- set C = a.pd1_casts | default([]) -%}{%- set I = a.pd1_imgs | default([]) -%}\n{%- if S | length > k and S[k] -%}\n{% if I[k] %}<img src=\"{{ I[k] }}\" width=\"200\" style=\"float:left;margin:0 16px 8px 0;border-radius:8px\">{% endif %}\n**{{ T[k] }}**\n\n{{ a.pd_channels[k] }} · {{ S[k] | timestamp_custom('%H:%M') }}\n\n{% if D[k] %}{{ D[k] }}{% else %}Nessuna trama disponibile.{% endif %}\n\n{% if C[k] %}**Cast:** {{ C[k] }}{% endif %}\n\n<br style=\"clear:both\">\n{%- else -%}\nProgramma non piu' in elenco.\n{%- endif -%}"
+          }
+         }
+        }
        }
       },
       {
        "type": "custom:button-card",
        "template": "prog_row",
-       "entity": "sensor.film_stasera",
+       "entity": "sensor.film_stasera_programmi",
        "variables": {
+        "s": 1,
         "i": 18
        },
        "grid_options": {
         "columns": "full"
+       },
+       "tap_action": {
+        "action": "fire-dom-event",
+        "browser_mod": {
+         "service": "browser_mod.popup",
+         "data": {
+          "dismissable": true,
+          "content": {
+           "type": "markdown",
+           "content": "{%- set a = states.sensor.film_stasera_programmi.attributes -%}\n{%- set k = 18 -%}\n{%- set S = a.pd1_starts | default([]) -%}{%- set T = a.pd1_titles | default([]) -%}\n{%- set D = a.pd1_descs | default([]) -%}{%- set C = a.pd1_casts | default([]) -%}{%- set I = a.pd1_imgs | default([]) -%}\n{%- if S | length > k and S[k] -%}\n{% if I[k] %}<img src=\"{{ I[k] }}\" width=\"200\" style=\"float:left;margin:0 16px 8px 0;border-radius:8px\">{% endif %}\n**{{ T[k] }}**\n\n{{ a.pd_channels[k] }} · {{ S[k] | timestamp_custom('%H:%M') }}\n\n{% if D[k] %}{{ D[k] }}{% else %}Nessuna trama disponibile.{% endif %}\n\n{% if C[k] %}**Cast:** {{ C[k] }}{% endif %}\n\n<br style=\"clear:both\">\n{%- else -%}\nProgramma non piu' in elenco.\n{%- endif -%}"
+          }
+         }
+        }
        }
       },
       {
        "type": "custom:button-card",
        "template": "prog_row",
-       "entity": "sensor.film_stasera",
+       "entity": "sensor.film_stasera_programmi",
        "variables": {
+        "s": 1,
         "i": 19
        },
        "grid_options": {
         "columns": "full"
+       },
+       "tap_action": {
+        "action": "fire-dom-event",
+        "browser_mod": {
+         "service": "browser_mod.popup",
+         "data": {
+          "dismissable": true,
+          "content": {
+           "type": "markdown",
+           "content": "{%- set a = states.sensor.film_stasera_programmi.attributes -%}\n{%- set k = 19 -%}\n{%- set S = a.pd1_starts | default([]) -%}{%- set T = a.pd1_titles | default([]) -%}\n{%- set D = a.pd1_descs | default([]) -%}{%- set C = a.pd1_casts | default([]) -%}{%- set I = a.pd1_imgs | default([]) -%}\n{%- if S | length > k and S[k] -%}\n{% if I[k] %}<img src=\"{{ I[k] }}\" width=\"200\" style=\"float:left;margin:0 16px 8px 0;border-radius:8px\">{% endif %}\n**{{ T[k] }}**\n\n{{ a.pd_channels[k] }} · {{ S[k] | timestamp_custom('%H:%M') }}\n\n{% if D[k] %}{{ D[k] }}{% else %}Nessuna trama disponibile.{% endif %}\n\n{% if C[k] %}**Cast:** {{ C[k] }}{% endif %}\n\n<br style=\"clear:both\">\n{%- else -%}\nProgramma non piu' in elenco.\n{%- endif -%}"
+          }
+         }
+        }
+       }
+      },
+      {
+       "type": "heading",
+       "heading": "Seconda serata (dopo le 23:00)",
+       "heading_style": "subtitle"
+      },
+      {
+       "type": "custom:button-card",
+       "template": "prog_row",
+       "entity": "sensor.film_stasera_programmi",
+       "variables": {
+        "s": 2,
+        "i": 0
+       },
+       "grid_options": {
+        "columns": "full"
+       },
+       "tap_action": {
+        "action": "fire-dom-event",
+        "browser_mod": {
+         "service": "browser_mod.popup",
+         "data": {
+          "dismissable": true,
+          "content": {
+           "type": "markdown",
+           "content": "{%- set a = states.sensor.film_stasera_programmi.attributes -%}\n{%- set k = 0 -%}\n{%- set S = a.pd2_starts | default([]) -%}{%- set T = a.pd2_titles | default([]) -%}\n{%- set D = a.pd2_descs | default([]) -%}{%- set C = a.pd2_casts | default([]) -%}{%- set I = a.pd2_imgs | default([]) -%}\n{%- if S | length > k and S[k] -%}\n{% if I[k] %}<img src=\"{{ I[k] }}\" width=\"200\" style=\"float:left;margin:0 16px 8px 0;border-radius:8px\">{% endif %}\n**{{ T[k] }}**\n\n{{ a.pd_channels[k] }} · {{ S[k] | timestamp_custom('%H:%M') }}\n\n{% if D[k] %}{{ D[k] }}{% else %}Nessuna trama disponibile.{% endif %}\n\n{% if C[k] %}**Cast:** {{ C[k] }}{% endif %}\n\n<br style=\"clear:both\">\n{%- else -%}\nProgramma non piu' in elenco.\n{%- endif -%}"
+          }
+         }
+        }
+       }
+      },
+      {
+       "type": "custom:button-card",
+       "template": "prog_row",
+       "entity": "sensor.film_stasera_programmi",
+       "variables": {
+        "s": 2,
+        "i": 1
+       },
+       "grid_options": {
+        "columns": "full"
+       },
+       "tap_action": {
+        "action": "fire-dom-event",
+        "browser_mod": {
+         "service": "browser_mod.popup",
+         "data": {
+          "dismissable": true,
+          "content": {
+           "type": "markdown",
+           "content": "{%- set a = states.sensor.film_stasera_programmi.attributes -%}\n{%- set k = 1 -%}\n{%- set S = a.pd2_starts | default([]) -%}{%- set T = a.pd2_titles | default([]) -%}\n{%- set D = a.pd2_descs | default([]) -%}{%- set C = a.pd2_casts | default([]) -%}{%- set I = a.pd2_imgs | default([]) -%}\n{%- if S | length > k and S[k] -%}\n{% if I[k] %}<img src=\"{{ I[k] }}\" width=\"200\" style=\"float:left;margin:0 16px 8px 0;border-radius:8px\">{% endif %}\n**{{ T[k] }}**\n\n{{ a.pd_channels[k] }} · {{ S[k] | timestamp_custom('%H:%M') }}\n\n{% if D[k] %}{{ D[k] }}{% else %}Nessuna trama disponibile.{% endif %}\n\n{% if C[k] %}**Cast:** {{ C[k] }}{% endif %}\n\n<br style=\"clear:both\">\n{%- else -%}\nProgramma non piu' in elenco.\n{%- endif -%}"
+          }
+         }
+        }
+       }
+      },
+      {
+       "type": "custom:button-card",
+       "template": "prog_row",
+       "entity": "sensor.film_stasera_programmi",
+       "variables": {
+        "s": 2,
+        "i": 2
+       },
+       "grid_options": {
+        "columns": "full"
+       },
+       "tap_action": {
+        "action": "fire-dom-event",
+        "browser_mod": {
+         "service": "browser_mod.popup",
+         "data": {
+          "dismissable": true,
+          "content": {
+           "type": "markdown",
+           "content": "{%- set a = states.sensor.film_stasera_programmi.attributes -%}\n{%- set k = 2 -%}\n{%- set S = a.pd2_starts | default([]) -%}{%- set T = a.pd2_titles | default([]) -%}\n{%- set D = a.pd2_descs | default([]) -%}{%- set C = a.pd2_casts | default([]) -%}{%- set I = a.pd2_imgs | default([]) -%}\n{%- if S | length > k and S[k] -%}\n{% if I[k] %}<img src=\"{{ I[k] }}\" width=\"200\" style=\"float:left;margin:0 16px 8px 0;border-radius:8px\">{% endif %}\n**{{ T[k] }}**\n\n{{ a.pd_channels[k] }} · {{ S[k] | timestamp_custom('%H:%M') }}\n\n{% if D[k] %}{{ D[k] }}{% else %}Nessuna trama disponibile.{% endif %}\n\n{% if C[k] %}**Cast:** {{ C[k] }}{% endif %}\n\n<br style=\"clear:both\">\n{%- else -%}\nProgramma non piu' in elenco.\n{%- endif -%}"
+          }
+         }
+        }
+       }
+      },
+      {
+       "type": "custom:button-card",
+       "template": "prog_row",
+       "entity": "sensor.film_stasera_programmi",
+       "variables": {
+        "s": 2,
+        "i": 3
+       },
+       "grid_options": {
+        "columns": "full"
+       },
+       "tap_action": {
+        "action": "fire-dom-event",
+        "browser_mod": {
+         "service": "browser_mod.popup",
+         "data": {
+          "dismissable": true,
+          "content": {
+           "type": "markdown",
+           "content": "{%- set a = states.sensor.film_stasera_programmi.attributes -%}\n{%- set k = 3 -%}\n{%- set S = a.pd2_starts | default([]) -%}{%- set T = a.pd2_titles | default([]) -%}\n{%- set D = a.pd2_descs | default([]) -%}{%- set C = a.pd2_casts | default([]) -%}{%- set I = a.pd2_imgs | default([]) -%}\n{%- if S | length > k and S[k] -%}\n{% if I[k] %}<img src=\"{{ I[k] }}\" width=\"200\" style=\"float:left;margin:0 16px 8px 0;border-radius:8px\">{% endif %}\n**{{ T[k] }}**\n\n{{ a.pd_channels[k] }} · {{ S[k] | timestamp_custom('%H:%M') }}\n\n{% if D[k] %}{{ D[k] }}{% else %}Nessuna trama disponibile.{% endif %}\n\n{% if C[k] %}**Cast:** {{ C[k] }}{% endif %}\n\n<br style=\"clear:both\">\n{%- else -%}\nProgramma non piu' in elenco.\n{%- endif -%}"
+          }
+         }
+        }
+       }
+      },
+      {
+       "type": "custom:button-card",
+       "template": "prog_row",
+       "entity": "sensor.film_stasera_programmi",
+       "variables": {
+        "s": 2,
+        "i": 4
+       },
+       "grid_options": {
+        "columns": "full"
+       },
+       "tap_action": {
+        "action": "fire-dom-event",
+        "browser_mod": {
+         "service": "browser_mod.popup",
+         "data": {
+          "dismissable": true,
+          "content": {
+           "type": "markdown",
+           "content": "{%- set a = states.sensor.film_stasera_programmi.attributes -%}\n{%- set k = 4 -%}\n{%- set S = a.pd2_starts | default([]) -%}{%- set T = a.pd2_titles | default([]) -%}\n{%- set D = a.pd2_descs | default([]) -%}{%- set C = a.pd2_casts | default([]) -%}{%- set I = a.pd2_imgs | default([]) -%}\n{%- if S | length > k and S[k] -%}\n{% if I[k] %}<img src=\"{{ I[k] }}\" width=\"200\" style=\"float:left;margin:0 16px 8px 0;border-radius:8px\">{% endif %}\n**{{ T[k] }}**\n\n{{ a.pd_channels[k] }} · {{ S[k] | timestamp_custom('%H:%M') }}\n\n{% if D[k] %}{{ D[k] }}{% else %}Nessuna trama disponibile.{% endif %}\n\n{% if C[k] %}**Cast:** {{ C[k] }}{% endif %}\n\n<br style=\"clear:both\">\n{%- else -%}\nProgramma non piu' in elenco.\n{%- endif -%}"
+          }
+         }
+        }
+       }
+      },
+      {
+       "type": "custom:button-card",
+       "template": "prog_row",
+       "entity": "sensor.film_stasera_programmi",
+       "variables": {
+        "s": 2,
+        "i": 5
+       },
+       "grid_options": {
+        "columns": "full"
+       },
+       "tap_action": {
+        "action": "fire-dom-event",
+        "browser_mod": {
+         "service": "browser_mod.popup",
+         "data": {
+          "dismissable": true,
+          "content": {
+           "type": "markdown",
+           "content": "{%- set a = states.sensor.film_stasera_programmi.attributes -%}\n{%- set k = 5 -%}\n{%- set S = a.pd2_starts | default([]) -%}{%- set T = a.pd2_titles | default([]) -%}\n{%- set D = a.pd2_descs | default([]) -%}{%- set C = a.pd2_casts | default([]) -%}{%- set I = a.pd2_imgs | default([]) -%}\n{%- if S | length > k and S[k] -%}\n{% if I[k] %}<img src=\"{{ I[k] }}\" width=\"200\" style=\"float:left;margin:0 16px 8px 0;border-radius:8px\">{% endif %}\n**{{ T[k] }}**\n\n{{ a.pd_channels[k] }} · {{ S[k] | timestamp_custom('%H:%M') }}\n\n{% if D[k] %}{{ D[k] }}{% else %}Nessuna trama disponibile.{% endif %}\n\n{% if C[k] %}**Cast:** {{ C[k] }}{% endif %}\n\n<br style=\"clear:both\">\n{%- else -%}\nProgramma non piu' in elenco.\n{%- endif -%}"
+          }
+         }
+        }
+       }
+      },
+      {
+       "type": "custom:button-card",
+       "template": "prog_row",
+       "entity": "sensor.film_stasera_programmi",
+       "variables": {
+        "s": 2,
+        "i": 6
+       },
+       "grid_options": {
+        "columns": "full"
+       },
+       "tap_action": {
+        "action": "fire-dom-event",
+        "browser_mod": {
+         "service": "browser_mod.popup",
+         "data": {
+          "dismissable": true,
+          "content": {
+           "type": "markdown",
+           "content": "{%- set a = states.sensor.film_stasera_programmi.attributes -%}\n{%- set k = 6 -%}\n{%- set S = a.pd2_starts | default([]) -%}{%- set T = a.pd2_titles | default([]) -%}\n{%- set D = a.pd2_descs | default([]) -%}{%- set C = a.pd2_casts | default([]) -%}{%- set I = a.pd2_imgs | default([]) -%}\n{%- if S | length > k and S[k] -%}\n{% if I[k] %}<img src=\"{{ I[k] }}\" width=\"200\" style=\"float:left;margin:0 16px 8px 0;border-radius:8px\">{% endif %}\n**{{ T[k] }}**\n\n{{ a.pd_channels[k] }} · {{ S[k] | timestamp_custom('%H:%M') }}\n\n{% if D[k] %}{{ D[k] }}{% else %}Nessuna trama disponibile.{% endif %}\n\n{% if C[k] %}**Cast:** {{ C[k] }}{% endif %}\n\n<br style=\"clear:both\">\n{%- else -%}\nProgramma non piu' in elenco.\n{%- endif -%}"
+          }
+         }
+        }
+       }
+      },
+      {
+       "type": "custom:button-card",
+       "template": "prog_row",
+       "entity": "sensor.film_stasera_programmi",
+       "variables": {
+        "s": 2,
+        "i": 7
+       },
+       "grid_options": {
+        "columns": "full"
+       },
+       "tap_action": {
+        "action": "fire-dom-event",
+        "browser_mod": {
+         "service": "browser_mod.popup",
+         "data": {
+          "dismissable": true,
+          "content": {
+           "type": "markdown",
+           "content": "{%- set a = states.sensor.film_stasera_programmi.attributes -%}\n{%- set k = 7 -%}\n{%- set S = a.pd2_starts | default([]) -%}{%- set T = a.pd2_titles | default([]) -%}\n{%- set D = a.pd2_descs | default([]) -%}{%- set C = a.pd2_casts | default([]) -%}{%- set I = a.pd2_imgs | default([]) -%}\n{%- if S | length > k and S[k] -%}\n{% if I[k] %}<img src=\"{{ I[k] }}\" width=\"200\" style=\"float:left;margin:0 16px 8px 0;border-radius:8px\">{% endif %}\n**{{ T[k] }}**\n\n{{ a.pd_channels[k] }} · {{ S[k] | timestamp_custom('%H:%M') }}\n\n{% if D[k] %}{{ D[k] }}{% else %}Nessuna trama disponibile.{% endif %}\n\n{% if C[k] %}**Cast:** {{ C[k] }}{% endif %}\n\n<br style=\"clear:both\">\n{%- else -%}\nProgramma non piu' in elenco.\n{%- endif -%}"
+          }
+         }
+        }
+       }
+      },
+      {
+       "type": "custom:button-card",
+       "template": "prog_row",
+       "entity": "sensor.film_stasera_programmi",
+       "variables": {
+        "s": 2,
+        "i": 8
+       },
+       "grid_options": {
+        "columns": "full"
+       },
+       "tap_action": {
+        "action": "fire-dom-event",
+        "browser_mod": {
+         "service": "browser_mod.popup",
+         "data": {
+          "dismissable": true,
+          "content": {
+           "type": "markdown",
+           "content": "{%- set a = states.sensor.film_stasera_programmi.attributes -%}\n{%- set k = 8 -%}\n{%- set S = a.pd2_starts | default([]) -%}{%- set T = a.pd2_titles | default([]) -%}\n{%- set D = a.pd2_descs | default([]) -%}{%- set C = a.pd2_casts | default([]) -%}{%- set I = a.pd2_imgs | default([]) -%}\n{%- if S | length > k and S[k] -%}\n{% if I[k] %}<img src=\"{{ I[k] }}\" width=\"200\" style=\"float:left;margin:0 16px 8px 0;border-radius:8px\">{% endif %}\n**{{ T[k] }}**\n\n{{ a.pd_channels[k] }} · {{ S[k] | timestamp_custom('%H:%M') }}\n\n{% if D[k] %}{{ D[k] }}{% else %}Nessuna trama disponibile.{% endif %}\n\n{% if C[k] %}**Cast:** {{ C[k] }}{% endif %}\n\n<br style=\"clear:both\">\n{%- else -%}\nProgramma non piu' in elenco.\n{%- endif -%}"
+          }
+         }
+        }
+       }
+      },
+      {
+       "type": "custom:button-card",
+       "template": "prog_row",
+       "entity": "sensor.film_stasera_programmi",
+       "variables": {
+        "s": 2,
+        "i": 9
+       },
+       "grid_options": {
+        "columns": "full"
+       },
+       "tap_action": {
+        "action": "fire-dom-event",
+        "browser_mod": {
+         "service": "browser_mod.popup",
+         "data": {
+          "dismissable": true,
+          "content": {
+           "type": "markdown",
+           "content": "{%- set a = states.sensor.film_stasera_programmi.attributes -%}\n{%- set k = 9 -%}\n{%- set S = a.pd2_starts | default([]) -%}{%- set T = a.pd2_titles | default([]) -%}\n{%- set D = a.pd2_descs | default([]) -%}{%- set C = a.pd2_casts | default([]) -%}{%- set I = a.pd2_imgs | default([]) -%}\n{%- if S | length > k and S[k] -%}\n{% if I[k] %}<img src=\"{{ I[k] }}\" width=\"200\" style=\"float:left;margin:0 16px 8px 0;border-radius:8px\">{% endif %}\n**{{ T[k] }}**\n\n{{ a.pd_channels[k] }} · {{ S[k] | timestamp_custom('%H:%M') }}\n\n{% if D[k] %}{{ D[k] }}{% else %}Nessuna trama disponibile.{% endif %}\n\n{% if C[k] %}**Cast:** {{ C[k] }}{% endif %}\n\n<br style=\"clear:both\">\n{%- else -%}\nProgramma non piu' in elenco.\n{%- endif -%}"
+          }
+         }
+        }
+       }
+      },
+      {
+       "type": "custom:button-card",
+       "template": "prog_row",
+       "entity": "sensor.film_stasera_programmi",
+       "variables": {
+        "s": 2,
+        "i": 10
+       },
+       "grid_options": {
+        "columns": "full"
+       },
+       "tap_action": {
+        "action": "fire-dom-event",
+        "browser_mod": {
+         "service": "browser_mod.popup",
+         "data": {
+          "dismissable": true,
+          "content": {
+           "type": "markdown",
+           "content": "{%- set a = states.sensor.film_stasera_programmi.attributes -%}\n{%- set k = 10 -%}\n{%- set S = a.pd2_starts | default([]) -%}{%- set T = a.pd2_titles | default([]) -%}\n{%- set D = a.pd2_descs | default([]) -%}{%- set C = a.pd2_casts | default([]) -%}{%- set I = a.pd2_imgs | default([]) -%}\n{%- if S | length > k and S[k] -%}\n{% if I[k] %}<img src=\"{{ I[k] }}\" width=\"200\" style=\"float:left;margin:0 16px 8px 0;border-radius:8px\">{% endif %}\n**{{ T[k] }}**\n\n{{ a.pd_channels[k] }} · {{ S[k] | timestamp_custom('%H:%M') }}\n\n{% if D[k] %}{{ D[k] }}{% else %}Nessuna trama disponibile.{% endif %}\n\n{% if C[k] %}**Cast:** {{ C[k] }}{% endif %}\n\n<br style=\"clear:both\">\n{%- else -%}\nProgramma non piu' in elenco.\n{%- endif -%}"
+          }
+         }
+        }
+       }
+      },
+      {
+       "type": "custom:button-card",
+       "template": "prog_row",
+       "entity": "sensor.film_stasera_programmi",
+       "variables": {
+        "s": 2,
+        "i": 11
+       },
+       "grid_options": {
+        "columns": "full"
+       },
+       "tap_action": {
+        "action": "fire-dom-event",
+        "browser_mod": {
+         "service": "browser_mod.popup",
+         "data": {
+          "dismissable": true,
+          "content": {
+           "type": "markdown",
+           "content": "{%- set a = states.sensor.film_stasera_programmi.attributes -%}\n{%- set k = 11 -%}\n{%- set S = a.pd2_starts | default([]) -%}{%- set T = a.pd2_titles | default([]) -%}\n{%- set D = a.pd2_descs | default([]) -%}{%- set C = a.pd2_casts | default([]) -%}{%- set I = a.pd2_imgs | default([]) -%}\n{%- if S | length > k and S[k] -%}\n{% if I[k] %}<img src=\"{{ I[k] }}\" width=\"200\" style=\"float:left;margin:0 16px 8px 0;border-radius:8px\">{% endif %}\n**{{ T[k] }}**\n\n{{ a.pd_channels[k] }} · {{ S[k] | timestamp_custom('%H:%M') }}\n\n{% if D[k] %}{{ D[k] }}{% else %}Nessuna trama disponibile.{% endif %}\n\n{% if C[k] %}**Cast:** {{ C[k] }}{% endif %}\n\n<br style=\"clear:both\">\n{%- else -%}\nProgramma non piu' in elenco.\n{%- endif -%}"
+          }
+         }
+        }
+       }
+      },
+      {
+       "type": "custom:button-card",
+       "template": "prog_row",
+       "entity": "sensor.film_stasera_programmi",
+       "variables": {
+        "s": 2,
+        "i": 12
+       },
+       "grid_options": {
+        "columns": "full"
+       },
+       "tap_action": {
+        "action": "fire-dom-event",
+        "browser_mod": {
+         "service": "browser_mod.popup",
+         "data": {
+          "dismissable": true,
+          "content": {
+           "type": "markdown",
+           "content": "{%- set a = states.sensor.film_stasera_programmi.attributes -%}\n{%- set k = 12 -%}\n{%- set S = a.pd2_starts | default([]) -%}{%- set T = a.pd2_titles | default([]) -%}\n{%- set D = a.pd2_descs | default([]) -%}{%- set C = a.pd2_casts | default([]) -%}{%- set I = a.pd2_imgs | default([]) -%}\n{%- if S | length > k and S[k] -%}\n{% if I[k] %}<img src=\"{{ I[k] }}\" width=\"200\" style=\"float:left;margin:0 16px 8px 0;border-radius:8px\">{% endif %}\n**{{ T[k] }}**\n\n{{ a.pd_channels[k] }} · {{ S[k] | timestamp_custom('%H:%M') }}\n\n{% if D[k] %}{{ D[k] }}{% else %}Nessuna trama disponibile.{% endif %}\n\n{% if C[k] %}**Cast:** {{ C[k] }}{% endif %}\n\n<br style=\"clear:both\">\n{%- else -%}\nProgramma non piu' in elenco.\n{%- endif -%}"
+          }
+         }
+        }
+       }
+      },
+      {
+       "type": "custom:button-card",
+       "template": "prog_row",
+       "entity": "sensor.film_stasera_programmi",
+       "variables": {
+        "s": 2,
+        "i": 13
+       },
+       "grid_options": {
+        "columns": "full"
+       },
+       "tap_action": {
+        "action": "fire-dom-event",
+        "browser_mod": {
+         "service": "browser_mod.popup",
+         "data": {
+          "dismissable": true,
+          "content": {
+           "type": "markdown",
+           "content": "{%- set a = states.sensor.film_stasera_programmi.attributes -%}\n{%- set k = 13 -%}\n{%- set S = a.pd2_starts | default([]) -%}{%- set T = a.pd2_titles | default([]) -%}\n{%- set D = a.pd2_descs | default([]) -%}{%- set C = a.pd2_casts | default([]) -%}{%- set I = a.pd2_imgs | default([]) -%}\n{%- if S | length > k and S[k] -%}\n{% if I[k] %}<img src=\"{{ I[k] }}\" width=\"200\" style=\"float:left;margin:0 16px 8px 0;border-radius:8px\">{% endif %}\n**{{ T[k] }}**\n\n{{ a.pd_channels[k] }} · {{ S[k] | timestamp_custom('%H:%M') }}\n\n{% if D[k] %}{{ D[k] }}{% else %}Nessuna trama disponibile.{% endif %}\n\n{% if C[k] %}**Cast:** {{ C[k] }}{% endif %}\n\n<br style=\"clear:both\">\n{%- else -%}\nProgramma non piu' in elenco.\n{%- endif -%}"
+          }
+         }
+        }
+       }
+      },
+      {
+       "type": "custom:button-card",
+       "template": "prog_row",
+       "entity": "sensor.film_stasera_programmi",
+       "variables": {
+        "s": 2,
+        "i": 14
+       },
+       "grid_options": {
+        "columns": "full"
+       },
+       "tap_action": {
+        "action": "fire-dom-event",
+        "browser_mod": {
+         "service": "browser_mod.popup",
+         "data": {
+          "dismissable": true,
+          "content": {
+           "type": "markdown",
+           "content": "{%- set a = states.sensor.film_stasera_programmi.attributes -%}\n{%- set k = 14 -%}\n{%- set S = a.pd2_starts | default([]) -%}{%- set T = a.pd2_titles | default([]) -%}\n{%- set D = a.pd2_descs | default([]) -%}{%- set C = a.pd2_casts | default([]) -%}{%- set I = a.pd2_imgs | default([]) -%}\n{%- if S | length > k and S[k] -%}\n{% if I[k] %}<img src=\"{{ I[k] }}\" width=\"200\" style=\"float:left;margin:0 16px 8px 0;border-radius:8px\">{% endif %}\n**{{ T[k] }}**\n\n{{ a.pd_channels[k] }} · {{ S[k] | timestamp_custom('%H:%M') }}\n\n{% if D[k] %}{{ D[k] }}{% else %}Nessuna trama disponibile.{% endif %}\n\n{% if C[k] %}**Cast:** {{ C[k] }}{% endif %}\n\n<br style=\"clear:both\">\n{%- else -%}\nProgramma non piu' in elenco.\n{%- endif -%}"
+          }
+         }
+        }
+       }
+      },
+      {
+       "type": "custom:button-card",
+       "template": "prog_row",
+       "entity": "sensor.film_stasera_programmi",
+       "variables": {
+        "s": 2,
+        "i": 15
+       },
+       "grid_options": {
+        "columns": "full"
+       },
+       "tap_action": {
+        "action": "fire-dom-event",
+        "browser_mod": {
+         "service": "browser_mod.popup",
+         "data": {
+          "dismissable": true,
+          "content": {
+           "type": "markdown",
+           "content": "{%- set a = states.sensor.film_stasera_programmi.attributes -%}\n{%- set k = 15 -%}\n{%- set S = a.pd2_starts | default([]) -%}{%- set T = a.pd2_titles | default([]) -%}\n{%- set D = a.pd2_descs | default([]) -%}{%- set C = a.pd2_casts | default([]) -%}{%- set I = a.pd2_imgs | default([]) -%}\n{%- if S | length > k and S[k] -%}\n{% if I[k] %}<img src=\"{{ I[k] }}\" width=\"200\" style=\"float:left;margin:0 16px 8px 0;border-radius:8px\">{% endif %}\n**{{ T[k] }}**\n\n{{ a.pd_channels[k] }} · {{ S[k] | timestamp_custom('%H:%M') }}\n\n{% if D[k] %}{{ D[k] }}{% else %}Nessuna trama disponibile.{% endif %}\n\n{% if C[k] %}**Cast:** {{ C[k] }}{% endif %}\n\n<br style=\"clear:both\">\n{%- else -%}\nProgramma non piu' in elenco.\n{%- endif -%}"
+          }
+         }
+        }
+       }
+      },
+      {
+       "type": "custom:button-card",
+       "template": "prog_row",
+       "entity": "sensor.film_stasera_programmi",
+       "variables": {
+        "s": 2,
+        "i": 16
+       },
+       "grid_options": {
+        "columns": "full"
+       },
+       "tap_action": {
+        "action": "fire-dom-event",
+        "browser_mod": {
+         "service": "browser_mod.popup",
+         "data": {
+          "dismissable": true,
+          "content": {
+           "type": "markdown",
+           "content": "{%- set a = states.sensor.film_stasera_programmi.attributes -%}\n{%- set k = 16 -%}\n{%- set S = a.pd2_starts | default([]) -%}{%- set T = a.pd2_titles | default([]) -%}\n{%- set D = a.pd2_descs | default([]) -%}{%- set C = a.pd2_casts | default([]) -%}{%- set I = a.pd2_imgs | default([]) -%}\n{%- if S | length > k and S[k] -%}\n{% if I[k] %}<img src=\"{{ I[k] }}\" width=\"200\" style=\"float:left;margin:0 16px 8px 0;border-radius:8px\">{% endif %}\n**{{ T[k] }}**\n\n{{ a.pd_channels[k] }} · {{ S[k] | timestamp_custom('%H:%M') }}\n\n{% if D[k] %}{{ D[k] }}{% else %}Nessuna trama disponibile.{% endif %}\n\n{% if C[k] %}**Cast:** {{ C[k] }}{% endif %}\n\n<br style=\"clear:both\">\n{%- else -%}\nProgramma non piu' in elenco.\n{%- endif -%}"
+          }
+         }
+        }
+       }
+      },
+      {
+       "type": "custom:button-card",
+       "template": "prog_row",
+       "entity": "sensor.film_stasera_programmi",
+       "variables": {
+        "s": 2,
+        "i": 17
+       },
+       "grid_options": {
+        "columns": "full"
+       },
+       "tap_action": {
+        "action": "fire-dom-event",
+        "browser_mod": {
+         "service": "browser_mod.popup",
+         "data": {
+          "dismissable": true,
+          "content": {
+           "type": "markdown",
+           "content": "{%- set a = states.sensor.film_stasera_programmi.attributes -%}\n{%- set k = 17 -%}\n{%- set S = a.pd2_starts | default([]) -%}{%- set T = a.pd2_titles | default([]) -%}\n{%- set D = a.pd2_descs | default([]) -%}{%- set C = a.pd2_casts | default([]) -%}{%- set I = a.pd2_imgs | default([]) -%}\n{%- if S | length > k and S[k] -%}\n{% if I[k] %}<img src=\"{{ I[k] }}\" width=\"200\" style=\"float:left;margin:0 16px 8px 0;border-radius:8px\">{% endif %}\n**{{ T[k] }}**\n\n{{ a.pd_channels[k] }} · {{ S[k] | timestamp_custom('%H:%M') }}\n\n{% if D[k] %}{{ D[k] }}{% else %}Nessuna trama disponibile.{% endif %}\n\n{% if C[k] %}**Cast:** {{ C[k] }}{% endif %}\n\n<br style=\"clear:both\">\n{%- else -%}\nProgramma non piu' in elenco.\n{%- endif -%}"
+          }
+         }
+        }
+       }
+      },
+      {
+       "type": "custom:button-card",
+       "template": "prog_row",
+       "entity": "sensor.film_stasera_programmi",
+       "variables": {
+        "s": 2,
+        "i": 18
+       },
+       "grid_options": {
+        "columns": "full"
+       },
+       "tap_action": {
+        "action": "fire-dom-event",
+        "browser_mod": {
+         "service": "browser_mod.popup",
+         "data": {
+          "dismissable": true,
+          "content": {
+           "type": "markdown",
+           "content": "{%- set a = states.sensor.film_stasera_programmi.attributes -%}\n{%- set k = 18 -%}\n{%- set S = a.pd2_starts | default([]) -%}{%- set T = a.pd2_titles | default([]) -%}\n{%- set D = a.pd2_descs | default([]) -%}{%- set C = a.pd2_casts | default([]) -%}{%- set I = a.pd2_imgs | default([]) -%}\n{%- if S | length > k and S[k] -%}\n{% if I[k] %}<img src=\"{{ I[k] }}\" width=\"200\" style=\"float:left;margin:0 16px 8px 0;border-radius:8px\">{% endif %}\n**{{ T[k] }}**\n\n{{ a.pd_channels[k] }} · {{ S[k] | timestamp_custom('%H:%M') }}\n\n{% if D[k] %}{{ D[k] }}{% else %}Nessuna trama disponibile.{% endif %}\n\n{% if C[k] %}**Cast:** {{ C[k] }}{% endif %}\n\n<br style=\"clear:both\">\n{%- else -%}\nProgramma non piu' in elenco.\n{%- endif -%}"
+          }
+         }
+        }
+       }
+      },
+      {
+       "type": "custom:button-card",
+       "template": "prog_row",
+       "entity": "sensor.film_stasera_programmi",
+       "variables": {
+        "s": 2,
+        "i": 19
+       },
+       "grid_options": {
+        "columns": "full"
+       },
+       "tap_action": {
+        "action": "fire-dom-event",
+        "browser_mod": {
+         "service": "browser_mod.popup",
+         "data": {
+          "dismissable": true,
+          "content": {
+           "type": "markdown",
+           "content": "{%- set a = states.sensor.film_stasera_programmi.attributes -%}\n{%- set k = 19 -%}\n{%- set S = a.pd2_starts | default([]) -%}{%- set T = a.pd2_titles | default([]) -%}\n{%- set D = a.pd2_descs | default([]) -%}{%- set C = a.pd2_casts | default([]) -%}{%- set I = a.pd2_imgs | default([]) -%}\n{%- if S | length > k and S[k] -%}\n{% if I[k] %}<img src=\"{{ I[k] }}\" width=\"200\" style=\"float:left;margin:0 16px 8px 0;border-radius:8px\">{% endif %}\n**{{ T[k] }}**\n\n{{ a.pd_channels[k] }} · {{ S[k] | timestamp_custom('%H:%M') }}\n\n{% if D[k] %}{{ D[k] }}{% else %}Nessuna trama disponibile.{% endif %}\n\n{% if C[k] %}**Cast:** {{ C[k] }}{% endif %}\n\n<br style=\"clear:both\">\n{%- else -%}\nProgramma non piu' in elenco.\n{%- endif -%}"
+          }
+         }
+        }
        }
       }
      ]
@@ -884,63 +1674,48 @@
       "padding": "6px 12px"
      },
      {
-      "display": "[[[ const a = entity.attributes; const k = variables.i; const esc = (s) => String(s == null ? '' : s).replace(/[&<>\"']/g, (c) => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '\"': '&quot;', \"'\": '&#39;'}[c])); if (k >= (a.prog_channels || []).length) return 'none'; const hm = (t) => new Date(t * 1000).toLocaleTimeString('it-IT', {hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Rome'}); return 'block'; ]]]"
+      "display": "[[[ const a = entity.attributes; const s = variables.s; const k = variables.i; const esc = (v) => String(v == null ? '' : v).replace(/[&<>\"']/g, (c) => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '\"': '&quot;', \"'\": '&#39;'}[c])); const start = (a['pd' + s + '_starts'] || [])[k]; if (!start) return 'none'; return 'block'; ]]]"
      }
     ],
     "grid": [
      {
-      "grid-template-areas": "\"c p\" \"c l\""
+      "grid-template-areas": "\"t l n\""
      },
      {
-      "grid-template-columns": "150px 1fr"
+      "grid-template-columns": "52px 96px 1fr"
      },
      {
       "align-items": "center"
      },
      {
       "column-gap": "12px"
-     },
-     {
-      "row-gap": "2px"
      }
     ],
     "custom_fields": {
-     "c": [
-      {
-       "justify-self": "start"
-      },
+     "t": [
       {
        "font-weight": "bold"
       }
      ],
-     "p": [
-      {
-       "text-align": "left"
-      },
-      {
-       "overflow": "hidden"
-      }
-     ],
      "l": [
       {
+       "justify-self": "start"
+      }
+     ],
+     "n": [
+      {
        "text-align": "left"
       },
       {
        "overflow": "hidden"
-      },
-      {
-       "opacity": "0.7"
-      },
-      {
-       "font-size": "0.9em"
       }
      ]
     }
    },
    "custom_fields": {
-    "c": "[[[ const a = entity.attributes; const k = variables.i; const esc = (s) => String(s == null ? '' : s).replace(/[&<>\"']/g, (c) => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '\"': '&quot;', \"'\": '&#39;'}[c])); if (k >= (a.prog_channels || []).length) return ''; const hm = (t) => new Date(t * 1000).toLocaleTimeString('it-IT', {hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Rome'}); const col = ({1: '#3B82F6', 2: '#F59E0B', 3: '#10B981'})[(a.prog_groups || [])[k]] || '#A855F7'; return '<span style=\"display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:8px;background:' + col + '\"></span>' + esc(a.prog_channels[k]); ]]]",
-    "p": "[[[ const a = entity.attributes; const k = variables.i; const esc = (s) => String(s == null ? '' : s).replace(/[&<>\"']/g, (c) => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '\"': '&quot;', \"'\": '&#39;'}[c])); if (k >= (a.prog_channels || []).length) return ''; const hm = (t) => new Date(t * 1000).toLocaleTimeString('it-IT', {hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Rome'}); const t = a.prog1_starts[k]; if (!t) return '&ndash;'; return '<b>' + hm(t) + '</b> ' + esc(a.prog1_titles[k]); ]]]",
-    "l": "[[[ const a = entity.attributes; const k = variables.i; const esc = (s) => String(s == null ? '' : s).replace(/[&<>\"']/g, (c) => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '\"': '&quot;', \"'\": '&#39;'}[c])); if (k >= (a.prog_channels || []).length) return ''; const hm = (t) => new Date(t * 1000).toLocaleTimeString('it-IT', {hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Rome'}); const t = a.prog2_starts[k]; if (!t) return '&ndash;'; return hm(t) + ' ' + esc(a.prog2_titles[k]); ]]]"
+    "t": "[[[ const a = entity.attributes; const s = variables.s; const k = variables.i; const esc = (v) => String(v == null ? '' : v).replace(/[&<>\"']/g, (c) => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '\"': '&quot;', \"'\": '&#39;'}[c])); const start = (a['pd' + s + '_starts'] || [])[k]; if (!start) return ''; return new Date(start * 1000).toLocaleTimeString('it-IT', {hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Rome'}); ]]]",
+    "l": "[[[ const a = entity.attributes; const s = variables.s; const k = variables.i; const esc = (v) => String(v == null ? '' : v).replace(/[&<>\"']/g, (c) => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '\"': '&quot;', \"'\": '&#39;'}[c])); const start = (a['pd' + s + '_starts'] || [])[k]; if (!start) return ''; const logo = (a.pd_logos || [])[k]; if (logo) return '<img src=\"' + esc(logo) + '\" height=\"30\" style=\"background:#fff;border-radius:6px;padding:2px 8px\">'; return '<span>' + esc(a.pd_channels[k]) + '</span>'; ]]]",
+    "n": "[[[ const a = entity.attributes; const s = variables.s; const k = variables.i; const esc = (v) => String(v == null ? '' : v).replace(/[&<>\"']/g, (c) => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '\"': '&quot;', \"'\": '&#39;'}[c])); const start = (a['pd' + s + '_starts'] || [])[k]; if (!start) return ''; return '<b>' + esc(a['pd' + s + '_titles'][k]) + '</b><br><small>' + esc(a.pd_channels[k]) + '</small>'; ]]]"
    }
   }
  }

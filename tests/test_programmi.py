@@ -82,11 +82,16 @@ def write_guide(path, channels, programmes):
     xml = ['<?xml version="1.0" encoding="UTF-8"?><tv>']
     for cid, name in channels.items():
         xml.append(f'<channel id="{cid}"><display-name>{escape(name)}</display-name></channel>')
-    for cid, start, stop, title, cats in programmes:
+    for cid, start, stop, title, cats, *extra in programmes:
         stop_attr = f' stop="{stop}00 +0200"' if stop else ""
         cat_xml = "".join(f"<category>{escape(c)}</category>" for c in cats)
+        more = extra[0] if extra else {}   # facoltativo: {"desc": ..., "icon": ..., "actors": [...]}
+        desc = f"<desc>{escape(more['desc'])}</desc>" if "desc" in more else ""
+        icon = f'<icon src="{escape(more["icon"])}"/>' if "icon" in more else ""
+        actors = "".join(f"<actor>{escape(a)}</actor>" for a in more.get("actors", []))
+        credits = f"<credits>{actors}</credits>" if actors else ""
         xml.append(f'<programme channel="{cid}" start="{start}00 +0200"{stop_attr}>'
-                   f"<title>{escape(title)}</title>{cat_xml}</programme>")
+                   f"<title>{escape(title)}</title>{desc}{credits}{cat_xml}{icon}</programme>")
     xml.append("</tv>")
     with gzip.open(path, "wt", encoding="utf-8") as f:
         f.write("".join(xml))
@@ -95,7 +100,10 @@ def write_guide(path, channels, programmes):
 CHANNELS = {"r1": "Rai 1", "r2": "Rai 2", "c5a": "Canale 5", "c5b": "Canale 5", "i1": "Italia 1", "n9": "NOVE"}
 PROGRAMMES = [
     ("r1", "202610122000", "202610122130", "Tg1", ["Informazione"]),
-    ("r1", "202610122130", "202610122235", "I casi di Teresa Battaglia", ["Intrattenimento"]),
+    ("r1", "202610122130", "202610122235", "I casi di Teresa Battaglia - Stag. 3 - Episodio 2 - La resa dei conti",
+     ["Intrattenimento"],
+     {"desc": "Una  trama\n su due righe.", "icon": "https://img.example/t.png",
+      "actors": ["Elena Sofia Ricci", "Maurizio Lastrico", "A", "B", "C", "D", "E"]}),
     ("r1", "202610122345", "202610130000", "Cose Nostre breve", ["Reportage"]),
     ("r1", "202610130008", "202610130110", "Cose Nostre", ["Reportage"]),
     ("r2", "202610122100", "202610122120", "TG2 Post", ["Intrattenimento"]),
@@ -135,7 +143,7 @@ class ExtractTest(unittest.TestCase):
         self.assertEqual([r["channel"] for r in self.rows], ["Rai 1", "Rai 2", "Canale 5", "Italia 1"])   # NOVE: nessuna fascia
 
     def test_rai1(self):
-        self.assertEqual(self.by["Rai 1"]["prime"]["title"], "I casi di Teresa Battaglia")
+        self.assertEqual(self.by["Rai 1"]["prime"]["title"], "I casi di Teresa Battaglia - Stag. 3 - E")   # corto: 40 caratteri
         self.assertEqual(self.by["Rai 1"]["late"]["title"], "Cose Nostre")            # salta quello da 15 minuti
 
     def test_rai2_salta_il_tg_breve_e_il_fuori_fascia(self):
@@ -258,3 +266,98 @@ class DryRunTest(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class DetailsTest(unittest.TestCase):
+    """Trama, immagine e cast della guida per i programmi di prima e seconda serata (secondo sensore)."""
+    day = date(2026, 10, 12)
+
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.path = os.path.join(self.tmp.name, "guide.gzip")
+        write_guide(self.path, CHANNELS, PROGRAMMES)
+        _, self.rows, _ = fs.extract(self.path, self.day)
+        self.out = fs.build(self.day, [], programmes=self.rows)
+
+    def tearDown(self):
+        self.tmp.cleanup()
+
+    def test_extract_porta_i_dettagli(self):
+        prime = self.rows[0]["prime"]
+        self.assertEqual(prime["desc"], "Una trama su due righe.")        # spazi e a capo ridotti a uno
+        self.assertEqual(prime["img"], "https://img.example/t.png")
+        self.assertTrue(prime["full"].endswith("La resa dei conti"))       # il titolo intero, non quello corto
+
+    def test_programma_senza_dettagli(self):
+        late = self.rows[0]["late"]
+        self.assertEqual((late["desc"], late["img"], late["cast"]), ("", "", ""))
+
+    def test_liste_della_stessa_lunghezza(self):
+        self.assertEqual({len(self.out[k]) for k in fs.PD_KEYS}, {len(self.rows)})
+
+    def test_cast_limitato_ai_primi_cinque(self):
+        cast = self.out["pd1_casts"][0].split(", ")
+        self.assertEqual(cast, ["Elena Sofia Ricci", "Maurizio Lastrico", "A", "B", "C"])
+
+    def test_titolo_intero_e_inizio(self):
+        self.assertEqual(self.out["pd1_titles"][0], self.rows[0]["prime"]["full"])
+        self.assertEqual(self.out["pd1_starts"][0], self.rows[0]["prime"]["at"])
+
+    def test_fascia_mancante_voci_vuote(self):
+        i = self.out["pd_channels"].index("Canale 5")          # solo prima serata
+        self.assertEqual((self.out["pd2_titles"][i], self.out["pd2_starts"][i], self.out["pd2_descs"][i]), ("", 0, ""))
+
+    def test_il_primo_sensore_non_cambia(self):
+        self.assertEqual(self.out["prog1_titles"][0], "I casi di Teresa Battaglia - S")   # il tile: 30
+
+    def test_nessun_programma_liste_vuote(self):
+        empty = fs.build(self.day, [])
+        self.assertTrue(all(empty[k] == [] for k in fs.PD_KEYS))
+
+    def test_trame_accorciate_sotto_il_limite(self):
+        pd = {k: [""] * 20 for k in fs.PD_KEYS}
+        for slot in fs.PD_SLOTS:
+            pd[f"{slot}_descs"] = ["x" * 400] * 20
+        fitted = fs.fit_details(pd, limit=9000)
+        self.assertLessEqual(len(json.dumps(fitted, ensure_ascii=False, separators=(",", ":"))), 9000)
+        self.assertEqual(len(fitted["pd1_descs"]), 20)
+
+    def test_fit_size_non_conta_gli_attributi_pd(self):
+        out = dict(self.out, titles=["a"], overviews=["y" * 500], tmdb_ids=[1], posters=[""], casts=[""], years=[""])
+        out["pd1_descs"] = ["z" * 20000] * len(self.rows)
+        self.assertEqual(fs.fit_size(out)["overviews"], ["y" * 500])
+
+    def test_cache_senza_dettagli_non_e_fresca(self):
+        c = dict(self.out, updated=1000)
+        self.assertTrue(fs.cache_is_fresh(c, self.day, 4, now=1001))
+        old = {k: v for k, v in c.items() if k not in fs.PD_KEYS}
+        self.assertFalse(fs.cache_is_fresh(old, self.day, 4, now=1001))
+
+    def test_cache_con_liste_diverse_si_scarta(self):
+        c = dict(self.out, updated=1000)
+        c["pd2_imgs"] = c["pd2_imgs"][:1]
+        path = os.path.join(self.tmp.name, "c.json")
+        with open(path, "w") as f:
+            json.dump(c, f)
+        self.assertIsNone(fs.load_cache(path))
+
+    def test_opzione_details_legge_la_cache_senza_rete(self):
+        import subprocess
+        path = os.path.join(self.tmp.name, "c.json")
+        with open(path, "w") as f:
+            json.dump(dict(self.out, updated=1000), f)
+        r = subprocess.run([sys.executable, "-I", os.path.join(os.path.dirname(fs.__file__), "film_stasera.py"),
+                            "--details", "--cache", path], capture_output=True, text=True, timeout=60)
+        self.assertEqual(r.returncode, 0, r.stderr)
+        got = json.loads(r.stdout)
+        self.assertEqual(got["count"], len(self.rows))
+        self.assertEqual(got["pd1_descs"][0], "Una trama su due righe.")
+        self.assertNotIn("titles", got)
+
+    def test_opzione_details_senza_cache(self):
+        import subprocess
+        r = subprocess.run([sys.executable, "-I", os.path.join(os.path.dirname(fs.__file__), "film_stasera.py"),
+                            "--details", "--cache", os.path.join(self.tmp.name, "manca.json")],
+                           capture_output=True, text=True, timeout=60)
+        got = json.loads(r.stdout)
+        self.assertEqual((got["count"], got["pd_channels"]), (0, []))

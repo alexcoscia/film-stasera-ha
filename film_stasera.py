@@ -98,6 +98,15 @@ PRIME = (21 * 60, 22 * 60 + 30)    # prima serata: inizia tra le 21:00 e le 22:3
 LATE = (23 * 60, 26 * 60)          # seconda serata: inizia tra le 23:00 e le 02:00
 MIN_MINUTES = 30
 MAX_SHOWS = 20
+# Dettagli dei programmi di prima e seconda serata (trama, immagine, cast della guida): vanno in un secondo sensore, perche'
+# nel primo non c'entrano. Attributi `pd*`: una voce per canale, come prog_*.
+MAX_PROG_FULL = 80      # titolo intero
+MAX_PROG_DESC = 220     # trama della guida, accorciata se serve per stare sotto MAX_PD_JSON
+MAX_PROG_CAST = 5
+MAX_PD_JSON = 15000
+PD_SLOTS = ("pd1", "pd2")
+PD_KEYS = ["pd_channels", "pd_groups", "pd_logos"] + [f"{s}_{k}" for s in PD_SLOTS for k in
+                                                       ("titles", "starts", "descs", "casts", "imgs")]
 MAX_PROG_TITLE = 30   # il tile riceve al massimo 2600 byte tra film e programmi: i titoli dei programmi sono piu' corti
 PROG_KEYS = ["prog_channels", "prog_groups", "prog1_titles", "prog1_starts", "prog2_titles", "prog2_starts"]
 # Ordine per numero di telecomando (la numerazione piu' comune del digitale terrestre). Un canale che non e' qui va in fondo.
@@ -234,9 +243,15 @@ def extract(path, day):
                     local = to_rome(start_aw)
                     minutes = (local - midnight).total_seconds() / 60
                     if PRIME[0] <= minutes < LATE[1]:
+                        icon = el.find("icon")
                         progs.setdefault(shown, []).append({
                             "title": short(el.findtext("title")), "at": int(start_aw.timestamp()),
-                            "min": minutes, "dur": duration_minutes(el, start_aw)})
+                            "min": minutes, "dur": duration_minutes(el, start_aw),
+                            "full": " ".join((el.findtext("title") or "").split())[:MAX_PROG_FULL],
+                            "desc": " ".join((el.findtext("desc") or "").split()),
+                            "img": icon.get("src", "") if icon is not None else "",
+                            "cast": ", ".join(a.text.strip() for a in el.findall("credits/actor")
+                                              if a.text and a.text.strip())})
                     if start_win <= local < end_win:
                         stats["evening"][shown] += 1
                         cats = [norm(c.text) for c in el.findall("category") if c.text]
@@ -321,9 +336,39 @@ def build(day, films, stale=False, error="", logos_dir=None, programmes=None):
         "prog2_titles": [r["late"]["title"][:MAX_PROG_TITLE].rstrip() if r["late"] else "" for r in rows],
         "prog2_starts": [r["late"]["at"] if r["late"] else 0 for r in rows],
     }
+    out.update(prog_details(rows, logos_dir))
     if error:
         out["error"] = error[:120]
     return out
+
+
+def prog_details(rows, logos_dir):
+    """Gli attributi `pd*` del secondo sensore: per ogni canale il logo e, per la prima e la seconda serata, titolo intero,
+    inizio, trama, cast (i primi MAX_PROG_CAST) e immagine della guida. Fascia mancante: voci vuote e inizio 0."""
+    def cast(item):
+        return ", ".join([n.strip() for n in item.get("cast", "").split(",")][:MAX_PROG_CAST]) if item else ""
+    pd = {"pd_channels": [r["channel"] for r in rows], "pd_groups": [r["group"] for r in rows],
+          "pd_logos": [logo_of(r["channel"], logos_dir) for r in rows]}
+    for slot, key in zip(PD_SLOTS, ("prime", "late")):
+        items = [r[key] for r in rows]
+        pd[f"{slot}_titles"] = [i.get("full", "") if i else "" for i in items]
+        pd[f"{slot}_starts"] = [i["at"] if i else 0 for i in items]
+        pd[f"{slot}_descs"] = [i.get("desc", "")[:MAX_PROG_DESC] if i else "" for i in items]
+        pd[f"{slot}_casts"] = [cast(i) for i in items]
+        pd[f"{slot}_imgs"] = [i.get("img", "") if i else "" for i in items]
+    return fit_details(pd)
+
+
+def fit_details(pd, limit=MAX_PD_JSON):
+    """Accorcia le trame (le piu' lunghe per prime) finche' gli attributi `pd*` stanno sotto il limite."""
+    pd = {k: list(v) for k, v in pd.items()}
+    while len(json.dumps(pd, ensure_ascii=False, separators=(",", ":"))) > limit:
+        slot, i = max(((sl, j) for sl in PD_SLOTS for j in range(len(pd[f"{sl}_descs"]))),
+                      key=lambda t: len(pd[f"{t[0]}_descs"][t[1]]), default=(None, None))
+        if slot is None or len(pd[f"{slot}_descs"][i]) <= 1:
+            break
+        pd[f"{slot}_descs"][i] = pd[f"{slot}_descs"][i][:max(1, len(pd[f"{slot}_descs"][i]) - 20)].rstrip()
+    return pd
 
 
 def load_cache(path):
@@ -337,6 +382,8 @@ def load_cache(path):
         # I programmi sono facoltativi (una cache di una versione precedente non li ha), ma se ci sono devono tornare.
         if "prog_channels" in c and len({len(c.get(k, ())) for k in PROG_KEYS}) != 1:
             return None
+        if "pd_channels" in c and len({len(c.get(k, ())) for k in PD_KEYS}) != 1:
+            return None
         return c
     except (OSError, ValueError, KeyError, TypeError):
         return None
@@ -346,7 +393,7 @@ def cache_is_fresh(cache, day, max_age_hours, now, use_input=False):
     """La cache di oggi, buona e abbastanza recente: niente nuovo download. Una cache senza i programmi (scritta da una
     versione precedente dello script) non e' mai fresca."""
     return bool(cache and cache["date"] == day.isoformat() and not cache.get("stale")
-                and "prog_channels" in cache and max_age_hours > 0 and not use_input
+                and "prog_channels" in cache and "pd_channels" in cache and max_age_hours > 0 and not use_input
                 and now - cache["updated"] < max_age_hours * 3600)
 
 
@@ -468,7 +515,9 @@ def load_dict(path):
 def fit_size(out, limit=MAX_JSON):
     """Accorcia le trame (le piu' lunghe per prime) finche' il JSON sta sotto il limite."""
     out = dict(out, overviews=list(out["overviews"]))
-    while len(json.dumps(out, ensure_ascii=False, separators=(",", ":"))) > limit:
+    def size():   # gli attributi pd* vanno nell'altro sensore: qui non contano
+        return len(json.dumps({k: v for k, v in out.items() if not k.startswith("pd")}, ensure_ascii=False, separators=(",", ":")))
+    while size() > limit:
         i = max(range(len(out["overviews"])), key=lambda j: len(out["overviews"][j]), default=None)
         if i is None or len(out["overviews"][i]) <= 1:
             break
@@ -521,10 +570,18 @@ def main():
     ap.add_argument("--tmdb-key-file", default=DEFAULT_TMDB_KEY, help="file con la chiave TMDB (una riga)")
     ap.add_argument("--tmdb-cache", default=DEFAULT_TMDB_CACHE, help="cache dei dettagli dei film")
     ap.add_argument("--dry-run", action="store_true", help="elenco leggibile, non scrive la cache")
+    ap.add_argument("--details", action="store_true",
+                    help="stampa solo i dettagli dei programmi (attributi pd*) dalla cache, senza scaricare: per il secondo sensore")
     args = ap.parse_args()
 
     day = datetime.strptime(args.date, "%Y-%m-%d").date() if args.date else today_rome()
     cache = load_cache(args.cache)
+    if args.details:
+        c = cache or {}
+        empty = {k: [] for k in PD_KEYS}
+        print(json.dumps({"count": len(c.get("pd_channels", [])), "date": c.get("date", ""), "updated": c.get("updated", 0),
+                          **{k: c.get(k, empty[k]) for k in PD_KEYS}}, ensure_ascii=False, separators=(",", ":")))
+        return 0
     out = None
 
     fresh = cache_is_fresh(cache, day, args.max_age_hours, time.time(), bool(args.input))

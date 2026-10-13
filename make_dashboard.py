@@ -93,20 +93,42 @@ def build_config(slots=20):
     return {"button_card_templates": {"film_row": film_row_template()}, "cards": cards}
 
 
-# --- Vista Programmi: un canale per riga, con prima e seconda serata (attributi prog_* del sensore) ---
+# --- Vista Programmi: prima e seconda serata, un programma per riga, dal secondo sensore (attributi pd* di
+# film_stasera.py --details). Come per i film: ora, logo del canale, titolo; un clic apre il popup con immagine, trama e cast.
+PROG_SENSOR = "sensor.film_stasera_programmi"
 PROG_PATH = "programmi"
 FILM_PATH = "stasera"
 DASH_URL = "/film-stasera"
-GROUP_COLORS = "{1: '#3B82F6', 2: '#F59E0B', 3: '#10B981'}"   # Rai, Mediaset, Discovery; gli altri viola come nel tile
+SLOTS = ((1, "Prima serata", "dalle 21:00"), (2, "Seconda serata", "dopo le 23:00"))
 
+# JS comune ai tre campi: s = fascia (1 o 2), k = canale; '' se quel canale non ha programmi in quella fascia.
 PROG_HEAD = (
-    "const a = entity.attributes; const k = variables.i; "
-    "const esc = (s) => String(s == null ? '' : s).replace(/[&<>\"']/g, (c) => "
+    "const a = entity.attributes; const s = variables.s; const k = variables.i; "
+    "const esc = (v) => String(v == null ? '' : v).replace(/[&<>\"']/g, (c) => "
     "({'&': '&amp;', '<': '&lt;', '>': '&gt;', '\"': '&quot;', \"'\": '&#39;'}[c])); "
-    "if (k >= (a.prog_channels || []).length) return ''; "
-    "const hm = (t) => new Date(t * 1000).toLocaleTimeString('it-IT', "
-    "{hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Rome'}); "
+    "const start = (a['pd' + s + '_starts'] || [])[k]; if (!start) return ''; "
 )
+
+
+def prog_popup_template(slot, i):
+    """Modello Jinja del popup: il programma `slot` (1 o 2) del canale i, con immagine, trama e cast della guida."""
+    p = f"pd{slot}"
+    return (
+        f"{{%- set a = states.sensor.film_stasera_programmi.attributes -%}}\n"
+        f"{{%- set k = {i} -%}}\n"
+        f"{{%- set S = a.{p}_starts | default([]) -%}}{{%- set T = a.{p}_titles | default([]) -%}}\n"
+        f"{{%- set D = a.{p}_descs | default([]) -%}}{{%- set C = a.{p}_casts | default([]) -%}}"
+        f"{{%- set I = a.{p}_imgs | default([]) -%}}\n"
+        "{%- if S | length > k and S[k] -%}\n"
+        "{% if I[k] %}<img src=\"{{ I[k] }}\" width=\"200\" "
+        "style=\"float:left;margin:0 16px 8px 0;border-radius:8px\">{% endif %}\n"
+        "**{{ T[k] }}**\n\n"
+        "{{ a.pd_channels[k] }} · {{ S[k] | timestamp_custom('%H:%M') }}\n\n"
+        "{% if D[k] %}{{ D[k] }}{% else %}Nessuna trama disponibile.{% endif %}\n\n"
+        "{% if C[k] %}**Cast:** {{ C[k] }}{% endif %}\n\n"
+        "<br style=\"clear:both\">\n"
+        "{%- else -%}\nProgramma non piu' in elenco.\n{%- endif -%}"
+    )
 
 
 def prog_row_template():
@@ -115,22 +137,23 @@ def prog_row_template():
         "styles": {
             "card": [{"padding": "6px 12px"},
                      {"display": "[[[ " + PROG_HEAD.replace("return ''", "return 'none'") + "return 'block'; ]]]"}],
-            "grid": [{"grid-template-areas": '"c p" "c l"'}, {"grid-template-columns": "150px 1fr"},
-                     {"align-items": "center"}, {"column-gap": "12px"}, {"row-gap": "2px"}],
+            "grid": [{"grid-template-areas": '"t l n"'}, {"grid-template-columns": "52px 96px 1fr"},
+                     {"align-items": "center"}, {"column-gap": "12px"}],
             "custom_fields": {
-                "c": [{"justify-self": "start"}, {"font-weight": "bold"}],
-                "p": [{"text-align": "left"}, {"overflow": "hidden"}],
-                "l": [{"text-align": "left"}, {"overflow": "hidden"}, {"opacity": "0.7"}, {"font-size": "0.9em"}],
+                "t": [{"font-weight": "bold"}],
+                "l": [{"justify-self": "start"}],
+                "n": [{"text-align": "left"}, {"overflow": "hidden"}],
             },
         },
         "custom_fields": {
-            "c": "[[[ " + PROG_HEAD + f"const col = ({GROUP_COLORS})[(a.prog_groups || [])[k]] || '#A855F7'; "
-                 "return '<span style=\"display:inline-block;width:10px;height:10px;border-radius:50%;"
-                 "margin-right:8px;background:' + col + '\"></span>' + esc(a.prog_channels[k]); ]]]",
-            "p": "[[[ " + PROG_HEAD + "const t = a.prog1_starts[k]; if (!t) return '&ndash;'; "
-                 "return '<b>' + hm(t) + '</b> ' + esc(a.prog1_titles[k]); ]]]",
-            "l": "[[[ " + PROG_HEAD + "const t = a.prog2_starts[k]; if (!t) return '&ndash;'; "
-                 "return hm(t) + ' ' + esc(a.prog2_titles[k]); ]]]",
+            "t": "[[[ " + PROG_HEAD + "return new Date(start * 1000).toLocaleTimeString('it-IT', "
+                 "{hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Rome'}); ]]]",
+            "l": "[[[ " + PROG_HEAD + "const logo = (a.pd_logos || [])[k]; "
+                 "if (logo) return '<img src=\"' + esc(logo) + '\" height=\"30\" "
+                 "style=\"background:#fff;border-radius:6px;padding:2px 8px\">'; "
+                 "return '<span>' + esc(a.pd_channels[k]) + '</span>'; ]]]",
+            "n": "[[[ " + PROG_HEAD + "return '<b>' + esc(a['pd' + s + '_titles'][k]) + '</b><br><small>' "
+                 "+ esc(a.pd_channels[k]) + '</small>'; ]]]",
         },
     }
 
@@ -152,8 +175,24 @@ def nav_card(text, path):
 
 
 def build_programmes_cards(slots=20):
-    return [{"type": "custom:button-card", "template": "prog_row", "entity": SENSOR,
-             "variables": {"i": i}, "grid_options": {"columns": "full"}} for i in range(slots)]
+    """Per ogni fascia un titoletto e `slots` righe; la riga di un canale senza programmi in quella fascia si nasconde."""
+    cards = []
+    for slot, title, hint in SLOTS:
+        cards.append({"type": "heading", "heading": f"{title} ({hint})", "heading_style": "subtitle"})
+        for i in range(slots):
+            cards.append({
+                "type": "custom:button-card", "template": "prog_row", "entity": PROG_SENSOR,
+                "variables": {"s": slot, "i": i}, "grid_options": {"columns": "full"},
+                "tap_action": {
+                    "action": "fire-dom-event",
+                    "browser_mod": {
+                        "service": "browser_mod.popup",
+                        "data": {"dismissable": True,
+                                 "content": {"type": "markdown", "content": prog_popup_template(slot, i)}},
+                    },
+                },
+            })
+    return cards
 
 
 def build_dashboard(slots=20):
@@ -167,11 +206,11 @@ def build_dashboard(slots=20):
             view("Stasera", FILM_PATH, "mdi:movie-open",
                  [{"type": "heading", "heading": "Film in TV stasera", "heading_style": "title",
                    "icon": "mdi:movie-open"},
-                  nav_card("Programmi stasera \u2192", PROG_PATH)] + films["cards"]),
+                  nav_card("Programmi stasera →", PROG_PATH)] + films["cards"]),
             view("Programmi", PROG_PATH, "mdi:television-classic",
                  [{"type": "heading", "heading": "Programmi in TV stasera", "heading_style": "title",
                    "icon": "mdi:television-classic"},
-                  nav_card("\u2190 Film stasera", FILM_PATH)] + build_programmes_cards(slots)),
+                  nav_card("← Film stasera", FILM_PATH)] + build_programmes_cards(slots)),
         ],
         "button_card_templates": {**films["button_card_templates"], "prog_row": prog_row_template()},
     }

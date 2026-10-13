@@ -10,6 +10,16 @@ command_line:
       scan_interval: 31536000         # si aggiorna solo dall'automazione qui sotto
       value_template: "{{ value_json.count }}"
       json_attributes: [date, updated, stale, titles, channels, starts, genres, groups, logos, tmdb_ids, posters, overviews, casts, years, prog_channels, prog_groups, prog1_titles, prog1_starts, prog2_titles, prog2_starts, error]
+  - sensor:
+      name: Film stasera programmi
+      unique_id: film_stasera_programmi
+      # Trama, immagine e cast dei programmi di prima e seconda serata: legge la cache, senza scaricare nulla.
+      # Va aggiornato dopo "Film stasera" (l'automazione qui sotto lo fa).
+      command: "python3 /config/film_stasera/film_stasera.py --details"
+      command_timeout: 30
+      scan_interval: 31536000
+      value_template: "{{ value_json.count }}"
+      json_attributes: [date, updated, pd_channels, pd_groups, pd_logos, pd1_titles, pd1_starts, pd1_descs, pd1_casts, pd1_imgs, pd2_titles, pd2_starts, pd2_descs, pd2_casts, pd2_imgs]
 
 automation:
   - id: film_stasera_aggiorna
@@ -22,3 +32,6 @@ automation:
       - action: homeassistant.update_entity
         target:
           entity_id: sensor.film_stasera
+      - action: homeassistant.update_entity
+        target:
+          entity_id: sensor.film_stasera_programmi
