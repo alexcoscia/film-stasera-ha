@@ -1,4 +1,824 @@
 {
+ "views": [
+  {
+   "title": "Stasera",
+   "path": "stasera",
+   "type": "sections",
+   "icon": "mdi:movie-open",
+   "max_columns": 2,
+   "sections": [
+    {
+     "type": "grid",
+     "cards": [
+      {
+       "type": "heading",
+       "heading": "Film in TV stasera",
+       "heading_style": "title",
+       "icon": "mdi:movie-open"
+      },
+      {
+       "type": "custom:button-card",
+       "name": "Programmi stasera →",
+       "show_icon": false,
+       "grid_options": {
+        "columns": "full"
+       },
+       "styles": {
+        "card": [
+         {
+          "background": "none"
+         },
+         {
+          "box-shadow": "none"
+         },
+         {
+          "padding": "0 12px"
+         }
+        ],
+        "name": [
+         {
+          "color": "var(--primary-color)"
+         },
+         {
+          "font-weight": "500"
+         },
+         {
+          "font-size": "16px"
+         },
+         {
+          "justify-self": "start"
+         }
+        ]
+       },
+       "tap_action": {
+        "action": "navigate",
+        "navigation_path": "/film-stasera/programmi"
+       }
+      },
+      {
+       "type": "custom:button-card",
+       "template": "film_row",
+       "entity": "sensor.film_stasera",
+       "variables": {
+        "i": 0
+       },
+       "grid_options": {
+        "columns": "full"
+       },
+       "tap_action": {
+        "action": "fire-dom-event",
+        "browser_mod": {
+         "service": "browser_mod.popup",
+         "data": {
+          "dismissable": true,
+          "content": {
+           "type": "markdown",
+           "content": "{%- set a = states.sensor.film_stasera.attributes -%}\n{%- set ora = now().timestamp() -%}\n{%- set ns = namespace(k=-1, n=0) -%}\n{%- for j in range(a.titles | length) if a.starts[j] + 9000 >= ora -%}\n{%- if ns.n == 0 %}{% set ns.k = j %}{% endif -%}\n{%- set ns.n = ns.n + 1 -%}\n{%- endfor -%}\n{%- set k = ns.k -%}\n{%- set P = a.posters | default([]) -%}{%- set O = a.overviews | default([]) -%}\n{%- set C = a.casts | default([]) -%}{%- set Y = a.years | default([]) -%}\n{%- if k >= 0 -%}\n{% if P | length > k and P[k] %}<img src=\"{{ P[k] }}\" width=\"150\" style=\"float:left;margin:0 16px 8px 0;border-radius:8px\">{% endif %}\n**{{ a.titles[k] }}**{% if Y | length > k and Y[k] %} ({{ Y[k] }}){% endif %}\n\n{{ a.channels[k] }} · {{ a.starts[k] | timestamp_custom('%H:%M') }}{% if a.genres[k] %} · {{ a.genres[k] }}{% endif %}\n\n{% if O | length > k and O[k] %}{{ O[k] }}{% else %}Nessuna trama disponibile.{% endif %}\n\n{% if C | length > k and C[k] %}**Cast:** {{ C[k] }}{% endif %}\n\n<br style=\"clear:both\"><small>This product uses the TMDB API but is not endorsed or certified by TMDB.</small>\n{%- else -%}\nFilm non piu' in programma.\n{%- endif -%}"
+          }
+         }
+        }
+       }
+      },
+      {
+       "type": "custom:button-card",
+       "template": "film_row",
+       "entity": "sensor.film_stasera",
+       "variables": {
+        "i": 1
+       },
+       "grid_options": {
+        "columns": "full"
+       },
+       "tap_action": {
+        "action": "fire-dom-event",
+        "browser_mod": {
+         "service": "browser_mod.popup",
+         "data": {
+          "dismissable": true,
+          "content": {
+           "type": "markdown",
+           "content": "{%- set a = states.sensor.film_stasera.attributes -%}\n{%- set ora = now().timestamp() -%}\n{%- set ns = namespace(k=-1, n=0) -%}\n{%- for j in range(a.titles | length) if a.starts[j] + 9000 >= ora -%}\n{%- if ns.n == 1 %}{% set ns.k = j %}{% endif -%}\n{%- set ns.n = ns.n + 1 -%}\n{%- endfor -%}\n{%- set k = ns.k -%}\n{%- set P = a.posters | default([]) -%}{%- set O = a.overviews | default([]) -%}\n{%- set C = a.casts | default([]) -%}{%- set Y = a.years | default([]) -%}\n{%- if k >= 0 -%}\n{% if P | length > k and P[k] %}<img src=\"{{ P[k] }}\" width=\"150\" style=\"float:left;margin:0 16px 8px 0;border-radius:8px\">{% endif %}\n**{{ a.titles[k] }}**{% if Y | length > k and Y[k] %} ({{ Y[k] }}){% endif %}\n\n{{ a.channels[k] }} · {{ a.starts[k] | timestamp_custom('%H:%M') }}{% if a.genres[k] %} · {{ a.genres[k] }}{% endif %}\n\n{% if O | length > k and O[k] %}{{ O[k] }}{% else %}Nessuna trama disponibile.{% endif %}\n\n{% if C | length > k and C[k] %}**Cast:** {{ C[k] }}{% endif %}\n\n<br style=\"clear:both\"><small>This product uses the TMDB API but is not endorsed or certified by TMDB.</small>\n{%- else -%}\nFilm non piu' in programma.\n{%- endif -%}"
+          }
+         }
+        }
+       }
+      },
+      {
+       "type": "custom:button-card",
+       "template": "film_row",
+       "entity": "sensor.film_stasera",
+       "variables": {
+        "i": 2
+       },
+       "grid_options": {
+        "columns": "full"
+       },
+       "tap_action": {
+        "action": "fire-dom-event",
+        "browser_mod": {
+         "service": "browser_mod.popup",
+         "data": {
+          "dismissable": true,
+          "content": {
+           "type": "markdown",
+           "content": "{%- set a = states.sensor.film_stasera.attributes -%}\n{%- set ora = now().timestamp() -%}\n{%- set ns = namespace(k=-1, n=0) -%}\n{%- for j in range(a.titles | length) if a.starts[j] + 9000 >= ora -%}\n{%- if ns.n == 2 %}{% set ns.k = j %}{% endif -%}\n{%- set ns.n = ns.n + 1 -%}\n{%- endfor -%}\n{%- set k = ns.k -%}\n{%- set P = a.posters | default([]) -%}{%- set O = a.overviews | default([]) -%}\n{%- set C = a.casts | default([]) -%}{%- set Y = a.years | default([]) -%}\n{%- if k >= 0 -%}\n{% if P | length > k and P[k] %}<img src=\"{{ P[k] }}\" width=\"150\" style=\"float:left;margin:0 16px 8px 0;border-radius:8px\">{% endif %}\n**{{ a.titles[k] }}**{% if Y | length > k and Y[k] %} ({{ Y[k] }}){% endif %}\n\n{{ a.channels[k] }} · {{ a.starts[k] | timestamp_custom('%H:%M') }}{% if a.genres[k] %} · {{ a.genres[k] }}{% endif %}\n\n{% if O | length > k and O[k] %}{{ O[k] }}{% else %}Nessuna trama disponibile.{% endif %}\n\n{% if C | length > k and C[k] %}**Cast:** {{ C[k] }}{% endif %}\n\n<br style=\"clear:both\"><small>This product uses the TMDB API but is not endorsed or certified by TMDB.</small>\n{%- else -%}\nFilm non piu' in programma.\n{%- endif -%}"
+          }
+         }
+        }
+       }
+      },
+      {
+       "type": "custom:button-card",
+       "template": "film_row",
+       "entity": "sensor.film_stasera",
+       "variables": {
+        "i": 3
+       },
+       "grid_options": {
+        "columns": "full"
+       },
+       "tap_action": {
+        "action": "fire-dom-event",
+        "browser_mod": {
+         "service": "browser_mod.popup",
+         "data": {
+          "dismissable": true,
+          "content": {
+           "type": "markdown",
+           "content": "{%- set a = states.sensor.film_stasera.attributes -%}\n{%- set ora = now().timestamp() -%}\n{%- set ns = namespace(k=-1, n=0) -%}\n{%- for j in range(a.titles | length) if a.starts[j] + 9000 >= ora -%}\n{%- if ns.n == 3 %}{% set ns.k = j %}{% endif -%}\n{%- set ns.n = ns.n + 1 -%}\n{%- endfor -%}\n{%- set k = ns.k -%}\n{%- set P = a.posters | default([]) -%}{%- set O = a.overviews | default([]) -%}\n{%- set C = a.casts | default([]) -%}{%- set Y = a.years | default([]) -%}\n{%- if k >= 0 -%}\n{% if P | length > k and P[k] %}<img src=\"{{ P[k] }}\" width=\"150\" style=\"float:left;margin:0 16px 8px 0;border-radius:8px\">{% endif %}\n**{{ a.titles[k] }}**{% if Y | length > k and Y[k] %} ({{ Y[k] }}){% endif %}\n\n{{ a.channels[k] }} · {{ a.starts[k] | timestamp_custom('%H:%M') }}{% if a.genres[k] %} · {{ a.genres[k] }}{% endif %}\n\n{% if O | length > k and O[k] %}{{ O[k] }}{% else %}Nessuna trama disponibile.{% endif %}\n\n{% if C | length > k and C[k] %}**Cast:** {{ C[k] }}{% endif %}\n\n<br style=\"clear:both\"><small>This product uses the TMDB API but is not endorsed or certified by TMDB.</small>\n{%- else -%}\nFilm non piu' in programma.\n{%- endif -%}"
+          }
+         }
+        }
+       }
+      },
+      {
+       "type": "custom:button-card",
+       "template": "film_row",
+       "entity": "sensor.film_stasera",
+       "variables": {
+        "i": 4
+       },
+       "grid_options": {
+        "columns": "full"
+       },
+       "tap_action": {
+        "action": "fire-dom-event",
+        "browser_mod": {
+         "service": "browser_mod.popup",
+         "data": {
+          "dismissable": true,
+          "content": {
+           "type": "markdown",
+           "content": "{%- set a = states.sensor.film_stasera.attributes -%}\n{%- set ora = now().timestamp() -%}\n{%- set ns = namespace(k=-1, n=0) -%}\n{%- for j in range(a.titles | length) if a.starts[j] + 9000 >= ora -%}\n{%- if ns.n == 4 %}{% set ns.k = j %}{% endif -%}\n{%- set ns.n = ns.n + 1 -%}\n{%- endfor -%}\n{%- set k = ns.k -%}\n{%- set P = a.posters | default([]) -%}{%- set O = a.overviews | default([]) -%}\n{%- set C = a.casts | default([]) -%}{%- set Y = a.years | default([]) -%}\n{%- if k >= 0 -%}\n{% if P | length > k and P[k] %}<img src=\"{{ P[k] }}\" width=\"150\" style=\"float:left;margin:0 16px 8px 0;border-radius:8px\">{% endif %}\n**{{ a.titles[k] }}**{% if Y | length > k and Y[k] %} ({{ Y[k] }}){% endif %}\n\n{{ a.channels[k] }} · {{ a.starts[k] | timestamp_custom('%H:%M') }}{% if a.genres[k] %} · {{ a.genres[k] }}{% endif %}\n\n{% if O | length > k and O[k] %}{{ O[k] }}{% else %}Nessuna trama disponibile.{% endif %}\n\n{% if C | length > k and C[k] %}**Cast:** {{ C[k] }}{% endif %}\n\n<br style=\"clear:both\"><small>This product uses the TMDB API but is not endorsed or certified by TMDB.</small>\n{%- else -%}\nFilm non piu' in programma.\n{%- endif -%}"
+          }
+         }
+        }
+       }
+      },
+      {
+       "type": "custom:button-card",
+       "template": "film_row",
+       "entity": "sensor.film_stasera",
+       "variables": {
+        "i": 5
+       },
+       "grid_options": {
+        "columns": "full"
+       },
+       "tap_action": {
+        "action": "fire-dom-event",
+        "browser_mod": {
+         "service": "browser_mod.popup",
+         "data": {
+          "dismissable": true,
+          "content": {
+           "type": "markdown",
+           "content": "{%- set a = states.sensor.film_stasera.attributes -%}\n{%- set ora = now().timestamp() -%}\n{%- set ns = namespace(k=-1, n=0) -%}\n{%- for j in range(a.titles | length) if a.starts[j] + 9000 >= ora -%}\n{%- if ns.n == 5 %}{% set ns.k = j %}{% endif -%}\n{%- set ns.n = ns.n + 1 -%}\n{%- endfor -%}\n{%- set k = ns.k -%}\n{%- set P = a.posters | default([]) -%}{%- set O = a.overviews | default([]) -%}\n{%- set C = a.casts | default([]) -%}{%- set Y = a.years | default([]) -%}\n{%- if k >= 0 -%}\n{% if P | length > k and P[k] %}<img src=\"{{ P[k] }}\" width=\"150\" style=\"float:left;margin:0 16px 8px 0;border-radius:8px\">{% endif %}\n**{{ a.titles[k] }}**{% if Y | length > k and Y[k] %} ({{ Y[k] }}){% endif %}\n\n{{ a.channels[k] }} · {{ a.starts[k] | timestamp_custom('%H:%M') }}{% if a.genres[k] %} · {{ a.genres[k] }}{% endif %}\n\n{% if O | length > k and O[k] %}{{ O[k] }}{% else %}Nessuna trama disponibile.{% endif %}\n\n{% if C | length > k and C[k] %}**Cast:** {{ C[k] }}{% endif %}\n\n<br style=\"clear:both\"><small>This product uses the TMDB API but is not endorsed or certified by TMDB.</small>\n{%- else -%}\nFilm non piu' in programma.\n{%- endif -%}"
+          }
+         }
+        }
+       }
+      },
+      {
+       "type": "custom:button-card",
+       "template": "film_row",
+       "entity": "sensor.film_stasera",
+       "variables": {
+        "i": 6
+       },
+       "grid_options": {
+        "columns": "full"
+       },
+       "tap_action": {
+        "action": "fire-dom-event",
+        "browser_mod": {
+         "service": "browser_mod.popup",
+         "data": {
+          "dismissable": true,
+          "content": {
+           "type": "markdown",
+           "content": "{%- set a = states.sensor.film_stasera.attributes -%}\n{%- set ora = now().timestamp() -%}\n{%- set ns = namespace(k=-1, n=0) -%}\n{%- for j in range(a.titles | length) if a.starts[j] + 9000 >= ora -%}\n{%- if ns.n == 6 %}{% set ns.k = j %}{% endif -%}\n{%- set ns.n = ns.n + 1 -%}\n{%- endfor -%}\n{%- set k = ns.k -%}\n{%- set P = a.posters | default([]) -%}{%- set O = a.overviews | default([]) -%}\n{%- set C = a.casts | default([]) -%}{%- set Y = a.years | default([]) -%}\n{%- if k >= 0 -%}\n{% if P | length > k and P[k] %}<img src=\"{{ P[k] }}\" width=\"150\" style=\"float:left;margin:0 16px 8px 0;border-radius:8px\">{% endif %}\n**{{ a.titles[k] }}**{% if Y | length > k and Y[k] %} ({{ Y[k] }}){% endif %}\n\n{{ a.channels[k] }} · {{ a.starts[k] | timestamp_custom('%H:%M') }}{% if a.genres[k] %} · {{ a.genres[k] }}{% endif %}\n\n{% if O | length > k and O[k] %}{{ O[k] }}{% else %}Nessuna trama disponibile.{% endif %}\n\n{% if C | length > k and C[k] %}**Cast:** {{ C[k] }}{% endif %}\n\n<br style=\"clear:both\"><small>This product uses the TMDB API but is not endorsed or certified by TMDB.</small>\n{%- else -%}\nFilm non piu' in programma.\n{%- endif -%}"
+          }
+         }
+        }
+       }
+      },
+      {
+       "type": "custom:button-card",
+       "template": "film_row",
+       "entity": "sensor.film_stasera",
+       "variables": {
+        "i": 7
+       },
+       "grid_options": {
+        "columns": "full"
+       },
+       "tap_action": {
+        "action": "fire-dom-event",
+        "browser_mod": {
+         "service": "browser_mod.popup",
+         "data": {
+          "dismissable": true,
+          "content": {
+           "type": "markdown",
+           "content": "{%- set a = states.sensor.film_stasera.attributes -%}\n{%- set ora = now().timestamp() -%}\n{%- set ns = namespace(k=-1, n=0) -%}\n{%- for j in range(a.titles | length) if a.starts[j] + 9000 >= ora -%}\n{%- if ns.n == 7 %}{% set ns.k = j %}{% endif -%}\n{%- set ns.n = ns.n + 1 -%}\n{%- endfor -%}\n{%- set k = ns.k -%}\n{%- set P = a.posters | default([]) -%}{%- set O = a.overviews | default([]) -%}\n{%- set C = a.casts | default([]) -%}{%- set Y = a.years | default([]) -%}\n{%- if k >= 0 -%}\n{% if P | length > k and P[k] %}<img src=\"{{ P[k] }}\" width=\"150\" style=\"float:left;margin:0 16px 8px 0;border-radius:8px\">{% endif %}\n**{{ a.titles[k] }}**{% if Y | length > k and Y[k] %} ({{ Y[k] }}){% endif %}\n\n{{ a.channels[k] }} · {{ a.starts[k] | timestamp_custom('%H:%M') }}{% if a.genres[k] %} · {{ a.genres[k] }}{% endif %}\n\n{% if O | length > k and O[k] %}{{ O[k] }}{% else %}Nessuna trama disponibile.{% endif %}\n\n{% if C | length > k and C[k] %}**Cast:** {{ C[k] }}{% endif %}\n\n<br style=\"clear:both\"><small>This product uses the TMDB API but is not endorsed or certified by TMDB.</small>\n{%- else -%}\nFilm non piu' in programma.\n{%- endif -%}"
+          }
+         }
+        }
+       }
+      },
+      {
+       "type": "custom:button-card",
+       "template": "film_row",
+       "entity": "sensor.film_stasera",
+       "variables": {
+        "i": 8
+       },
+       "grid_options": {
+        "columns": "full"
+       },
+       "tap_action": {
+        "action": "fire-dom-event",
+        "browser_mod": {
+         "service": "browser_mod.popup",
+         "data": {
+          "dismissable": true,
+          "content": {
+           "type": "markdown",
+           "content": "{%- set a = states.sensor.film_stasera.attributes -%}\n{%- set ora = now().timestamp() -%}\n{%- set ns = namespace(k=-1, n=0) -%}\n{%- for j in range(a.titles | length) if a.starts[j] + 9000 >= ora -%}\n{%- if ns.n == 8 %}{% set ns.k = j %}{% endif -%}\n{%- set ns.n = ns.n + 1 -%}\n{%- endfor -%}\n{%- set k = ns.k -%}\n{%- set P = a.posters | default([]) -%}{%- set O = a.overviews | default([]) -%}\n{%- set C = a.casts | default([]) -%}{%- set Y = a.years | default([]) -%}\n{%- if k >= 0 -%}\n{% if P | length > k and P[k] %}<img src=\"{{ P[k] }}\" width=\"150\" style=\"float:left;margin:0 16px 8px 0;border-radius:8px\">{% endif %}\n**{{ a.titles[k] }}**{% if Y | length > k and Y[k] %} ({{ Y[k] }}){% endif %}\n\n{{ a.channels[k] }} · {{ a.starts[k] | timestamp_custom('%H:%M') }}{% if a.genres[k] %} · {{ a.genres[k] }}{% endif %}\n\n{% if O | length > k and O[k] %}{{ O[k] }}{% else %}Nessuna trama disponibile.{% endif %}\n\n{% if C | length > k and C[k] %}**Cast:** {{ C[k] }}{% endif %}\n\n<br style=\"clear:both\"><small>This product uses the TMDB API but is not endorsed or certified by TMDB.</small>\n{%- else -%}\nFilm non piu' in programma.\n{%- endif -%}"
+          }
+         }
+        }
+       }
+      },
+      {
+       "type": "custom:button-card",
+       "template": "film_row",
+       "entity": "sensor.film_stasera",
+       "variables": {
+        "i": 9
+       },
+       "grid_options": {
+        "columns": "full"
+       },
+       "tap_action": {
+        "action": "fire-dom-event",
+        "browser_mod": {
+         "service": "browser_mod.popup",
+         "data": {
+          "dismissable": true,
+          "content": {
+           "type": "markdown",
+           "content": "{%- set a = states.sensor.film_stasera.attributes -%}\n{%- set ora = now().timestamp() -%}\n{%- set ns = namespace(k=-1, n=0) -%}\n{%- for j in range(a.titles | length) if a.starts[j] + 9000 >= ora -%}\n{%- if ns.n == 9 %}{% set ns.k = j %}{% endif -%}\n{%- set ns.n = ns.n + 1 -%}\n{%- endfor -%}\n{%- set k = ns.k -%}\n{%- set P = a.posters | default([]) -%}{%- set O = a.overviews | default([]) -%}\n{%- set C = a.casts | default([]) -%}{%- set Y = a.years | default([]) -%}\n{%- if k >= 0 -%}\n{% if P | length > k and P[k] %}<img src=\"{{ P[k] }}\" width=\"150\" style=\"float:left;margin:0 16px 8px 0;border-radius:8px\">{% endif %}\n**{{ a.titles[k] }}**{% if Y | length > k and Y[k] %} ({{ Y[k] }}){% endif %}\n\n{{ a.channels[k] }} · {{ a.starts[k] | timestamp_custom('%H:%M') }}{% if a.genres[k] %} · {{ a.genres[k] }}{% endif %}\n\n{% if O | length > k and O[k] %}{{ O[k] }}{% else %}Nessuna trama disponibile.{% endif %}\n\n{% if C | length > k and C[k] %}**Cast:** {{ C[k] }}{% endif %}\n\n<br style=\"clear:both\"><small>This product uses the TMDB API but is not endorsed or certified by TMDB.</small>\n{%- else -%}\nFilm non piu' in programma.\n{%- endif -%}"
+          }
+         }
+        }
+       }
+      },
+      {
+       "type": "custom:button-card",
+       "template": "film_row",
+       "entity": "sensor.film_stasera",
+       "variables": {
+        "i": 10
+       },
+       "grid_options": {
+        "columns": "full"
+       },
+       "tap_action": {
+        "action": "fire-dom-event",
+        "browser_mod": {
+         "service": "browser_mod.popup",
+         "data": {
+          "dismissable": true,
+          "content": {
+           "type": "markdown",
+           "content": "{%- set a = states.sensor.film_stasera.attributes -%}\n{%- set ora = now().timestamp() -%}\n{%- set ns = namespace(k=-1, n=0) -%}\n{%- for j in range(a.titles | length) if a.starts[j] + 9000 >= ora -%}\n{%- if ns.n == 10 %}{% set ns.k = j %}{% endif -%}\n{%- set ns.n = ns.n + 1 -%}\n{%- endfor -%}\n{%- set k = ns.k -%}\n{%- set P = a.posters | default([]) -%}{%- set O = a.overviews | default([]) -%}\n{%- set C = a.casts | default([]) -%}{%- set Y = a.years | default([]) -%}\n{%- if k >= 0 -%}\n{% if P | length > k and P[k] %}<img src=\"{{ P[k] }}\" width=\"150\" style=\"float:left;margin:0 16px 8px 0;border-radius:8px\">{% endif %}\n**{{ a.titles[k] }}**{% if Y | length > k and Y[k] %} ({{ Y[k] }}){% endif %}\n\n{{ a.channels[k] }} · {{ a.starts[k] | timestamp_custom('%H:%M') }}{% if a.genres[k] %} · {{ a.genres[k] }}{% endif %}\n\n{% if O | length > k and O[k] %}{{ O[k] }}{% else %}Nessuna trama disponibile.{% endif %}\n\n{% if C | length > k and C[k] %}**Cast:** {{ C[k] }}{% endif %}\n\n<br style=\"clear:both\"><small>This product uses the TMDB API but is not endorsed or certified by TMDB.</small>\n{%- else -%}\nFilm non piu' in programma.\n{%- endif -%}"
+          }
+         }
+        }
+       }
+      },
+      {
+       "type": "custom:button-card",
+       "template": "film_row",
+       "entity": "sensor.film_stasera",
+       "variables": {
+        "i": 11
+       },
+       "grid_options": {
+        "columns": "full"
+       },
+       "tap_action": {
+        "action": "fire-dom-event",
+        "browser_mod": {
+         "service": "browser_mod.popup",
+         "data": {
+          "dismissable": true,
+          "content": {
+           "type": "markdown",
+           "content": "{%- set a = states.sensor.film_stasera.attributes -%}\n{%- set ora = now().timestamp() -%}\n{%- set ns = namespace(k=-1, n=0) -%}\n{%- for j in range(a.titles | length) if a.starts[j] + 9000 >= ora -%}\n{%- if ns.n == 11 %}{% set ns.k = j %}{% endif -%}\n{%- set ns.n = ns.n + 1 -%}\n{%- endfor -%}\n{%- set k = ns.k -%}\n{%- set P = a.posters | default([]) -%}{%- set O = a.overviews | default([]) -%}\n{%- set C = a.casts | default([]) -%}{%- set Y = a.years | default([]) -%}\n{%- if k >= 0 -%}\n{% if P | length > k and P[k] %}<img src=\"{{ P[k] }}\" width=\"150\" style=\"float:left;margin:0 16px 8px 0;border-radius:8px\">{% endif %}\n**{{ a.titles[k] }}**{% if Y | length > k and Y[k] %} ({{ Y[k] }}){% endif %}\n\n{{ a.channels[k] }} · {{ a.starts[k] | timestamp_custom('%H:%M') }}{% if a.genres[k] %} · {{ a.genres[k] }}{% endif %}\n\n{% if O | length > k and O[k] %}{{ O[k] }}{% else %}Nessuna trama disponibile.{% endif %}\n\n{% if C | length > k and C[k] %}**Cast:** {{ C[k] }}{% endif %}\n\n<br style=\"clear:both\"><small>This product uses the TMDB API but is not endorsed or certified by TMDB.</small>\n{%- else -%}\nFilm non piu' in programma.\n{%- endif -%}"
+          }
+         }
+        }
+       }
+      },
+      {
+       "type": "custom:button-card",
+       "template": "film_row",
+       "entity": "sensor.film_stasera",
+       "variables": {
+        "i": 12
+       },
+       "grid_options": {
+        "columns": "full"
+       },
+       "tap_action": {
+        "action": "fire-dom-event",
+        "browser_mod": {
+         "service": "browser_mod.popup",
+         "data": {
+          "dismissable": true,
+          "content": {
+           "type": "markdown",
+           "content": "{%- set a = states.sensor.film_stasera.attributes -%}\n{%- set ora = now().timestamp() -%}\n{%- set ns = namespace(k=-1, n=0) -%}\n{%- for j in range(a.titles | length) if a.starts[j] + 9000 >= ora -%}\n{%- if ns.n == 12 %}{% set ns.k = j %}{% endif -%}\n{%- set ns.n = ns.n + 1 -%}\n{%- endfor -%}\n{%- set k = ns.k -%}\n{%- set P = a.posters | default([]) -%}{%- set O = a.overviews | default([]) -%}\n{%- set C = a.casts | default([]) -%}{%- set Y = a.years | default([]) -%}\n{%- if k >= 0 -%}\n{% if P | length > k and P[k] %}<img src=\"{{ P[k] }}\" width=\"150\" style=\"float:left;margin:0 16px 8px 0;border-radius:8px\">{% endif %}\n**{{ a.titles[k] }}**{% if Y | length > k and Y[k] %} ({{ Y[k] }}){% endif %}\n\n{{ a.channels[k] }} · {{ a.starts[k] | timestamp_custom('%H:%M') }}{% if a.genres[k] %} · {{ a.genres[k] }}{% endif %}\n\n{% if O | length > k and O[k] %}{{ O[k] }}{% else %}Nessuna trama disponibile.{% endif %}\n\n{% if C | length > k and C[k] %}**Cast:** {{ C[k] }}{% endif %}\n\n<br style=\"clear:both\"><small>This product uses the TMDB API but is not endorsed or certified by TMDB.</small>\n{%- else -%}\nFilm non piu' in programma.\n{%- endif -%}"
+          }
+         }
+        }
+       }
+      },
+      {
+       "type": "custom:button-card",
+       "template": "film_row",
+       "entity": "sensor.film_stasera",
+       "variables": {
+        "i": 13
+       },
+       "grid_options": {
+        "columns": "full"
+       },
+       "tap_action": {
+        "action": "fire-dom-event",
+        "browser_mod": {
+         "service": "browser_mod.popup",
+         "data": {
+          "dismissable": true,
+          "content": {
+           "type": "markdown",
+           "content": "{%- set a = states.sensor.film_stasera.attributes -%}\n{%- set ora = now().timestamp() -%}\n{%- set ns = namespace(k=-1, n=0) -%}\n{%- for j in range(a.titles | length) if a.starts[j] + 9000 >= ora -%}\n{%- if ns.n == 13 %}{% set ns.k = j %}{% endif -%}\n{%- set ns.n = ns.n + 1 -%}\n{%- endfor -%}\n{%- set k = ns.k -%}\n{%- set P = a.posters | default([]) -%}{%- set O = a.overviews | default([]) -%}\n{%- set C = a.casts | default([]) -%}{%- set Y = a.years | default([]) -%}\n{%- if k >= 0 -%}\n{% if P | length > k and P[k] %}<img src=\"{{ P[k] }}\" width=\"150\" style=\"float:left;margin:0 16px 8px 0;border-radius:8px\">{% endif %}\n**{{ a.titles[k] }}**{% if Y | length > k and Y[k] %} ({{ Y[k] }}){% endif %}\n\n{{ a.channels[k] }} · {{ a.starts[k] | timestamp_custom('%H:%M') }}{% if a.genres[k] %} · {{ a.genres[k] }}{% endif %}\n\n{% if O | length > k and O[k] %}{{ O[k] }}{% else %}Nessuna trama disponibile.{% endif %}\n\n{% if C | length > k and C[k] %}**Cast:** {{ C[k] }}{% endif %}\n\n<br style=\"clear:both\"><small>This product uses the TMDB API but is not endorsed or certified by TMDB.</small>\n{%- else -%}\nFilm non piu' in programma.\n{%- endif -%}"
+          }
+         }
+        }
+       }
+      },
+      {
+       "type": "custom:button-card",
+       "template": "film_row",
+       "entity": "sensor.film_stasera",
+       "variables": {
+        "i": 14
+       },
+       "grid_options": {
+        "columns": "full"
+       },
+       "tap_action": {
+        "action": "fire-dom-event",
+        "browser_mod": {
+         "service": "browser_mod.popup",
+         "data": {
+          "dismissable": true,
+          "content": {
+           "type": "markdown",
+           "content": "{%- set a = states.sensor.film_stasera.attributes -%}\n{%- set ora = now().timestamp() -%}\n{%- set ns = namespace(k=-1, n=0) -%}\n{%- for j in range(a.titles | length) if a.starts[j] + 9000 >= ora -%}\n{%- if ns.n == 14 %}{% set ns.k = j %}{% endif -%}\n{%- set ns.n = ns.n + 1 -%}\n{%- endfor -%}\n{%- set k = ns.k -%}\n{%- set P = a.posters | default([]) -%}{%- set O = a.overviews | default([]) -%}\n{%- set C = a.casts | default([]) -%}{%- set Y = a.years | default([]) -%}\n{%- if k >= 0 -%}\n{% if P | length > k and P[k] %}<img src=\"{{ P[k] }}\" width=\"150\" style=\"float:left;margin:0 16px 8px 0;border-radius:8px\">{% endif %}\n**{{ a.titles[k] }}**{% if Y | length > k and Y[k] %} ({{ Y[k] }}){% endif %}\n\n{{ a.channels[k] }} · {{ a.starts[k] | timestamp_custom('%H:%M') }}{% if a.genres[k] %} · {{ a.genres[k] }}{% endif %}\n\n{% if O | length > k and O[k] %}{{ O[k] }}{% else %}Nessuna trama disponibile.{% endif %}\n\n{% if C | length > k and C[k] %}**Cast:** {{ C[k] }}{% endif %}\n\n<br style=\"clear:both\"><small>This product uses the TMDB API but is not endorsed or certified by TMDB.</small>\n{%- else -%}\nFilm non piu' in programma.\n{%- endif -%}"
+          }
+         }
+        }
+       }
+      },
+      {
+       "type": "custom:button-card",
+       "template": "film_row",
+       "entity": "sensor.film_stasera",
+       "variables": {
+        "i": 15
+       },
+       "grid_options": {
+        "columns": "full"
+       },
+       "tap_action": {
+        "action": "fire-dom-event",
+        "browser_mod": {
+         "service": "browser_mod.popup",
+         "data": {
+          "dismissable": true,
+          "content": {
+           "type": "markdown",
+           "content": "{%- set a = states.sensor.film_stasera.attributes -%}\n{%- set ora = now().timestamp() -%}\n{%- set ns = namespace(k=-1, n=0) -%}\n{%- for j in range(a.titles | length) if a.starts[j] + 9000 >= ora -%}\n{%- if ns.n == 15 %}{% set ns.k = j %}{% endif -%}\n{%- set ns.n = ns.n + 1 -%}\n{%- endfor -%}\n{%- set k = ns.k -%}\n{%- set P = a.posters | default([]) -%}{%- set O = a.overviews | default([]) -%}\n{%- set C = a.casts | default([]) -%}{%- set Y = a.years | default([]) -%}\n{%- if k >= 0 -%}\n{% if P | length > k and P[k] %}<img src=\"{{ P[k] }}\" width=\"150\" style=\"float:left;margin:0 16px 8px 0;border-radius:8px\">{% endif %}\n**{{ a.titles[k] }}**{% if Y | length > k and Y[k] %} ({{ Y[k] }}){% endif %}\n\n{{ a.channels[k] }} · {{ a.starts[k] | timestamp_custom('%H:%M') }}{% if a.genres[k] %} · {{ a.genres[k] }}{% endif %}\n\n{% if O | length > k and O[k] %}{{ O[k] }}{% else %}Nessuna trama disponibile.{% endif %}\n\n{% if C | length > k and C[k] %}**Cast:** {{ C[k] }}{% endif %}\n\n<br style=\"clear:both\"><small>This product uses the TMDB API but is not endorsed or certified by TMDB.</small>\n{%- else -%}\nFilm non piu' in programma.\n{%- endif -%}"
+          }
+         }
+        }
+       }
+      },
+      {
+       "type": "custom:button-card",
+       "template": "film_row",
+       "entity": "sensor.film_stasera",
+       "variables": {
+        "i": 16
+       },
+       "grid_options": {
+        "columns": "full"
+       },
+       "tap_action": {
+        "action": "fire-dom-event",
+        "browser_mod": {
+         "service": "browser_mod.popup",
+         "data": {
+          "dismissable": true,
+          "content": {
+           "type": "markdown",
+           "content": "{%- set a = states.sensor.film_stasera.attributes -%}\n{%- set ora = now().timestamp() -%}\n{%- set ns = namespace(k=-1, n=0) -%}\n{%- for j in range(a.titles | length) if a.starts[j] + 9000 >= ora -%}\n{%- if ns.n == 16 %}{% set ns.k = j %}{% endif -%}\n{%- set ns.n = ns.n + 1 -%}\n{%- endfor -%}\n{%- set k = ns.k -%}\n{%- set P = a.posters | default([]) -%}{%- set O = a.overviews | default([]) -%}\n{%- set C = a.casts | default([]) -%}{%- set Y = a.years | default([]) -%}\n{%- if k >= 0 -%}\n{% if P | length > k and P[k] %}<img src=\"{{ P[k] }}\" width=\"150\" style=\"float:left;margin:0 16px 8px 0;border-radius:8px\">{% endif %}\n**{{ a.titles[k] }}**{% if Y | length > k and Y[k] %} ({{ Y[k] }}){% endif %}\n\n{{ a.channels[k] }} · {{ a.starts[k] | timestamp_custom('%H:%M') }}{% if a.genres[k] %} · {{ a.genres[k] }}{% endif %}\n\n{% if O | length > k and O[k] %}{{ O[k] }}{% else %}Nessuna trama disponibile.{% endif %}\n\n{% if C | length > k and C[k] %}**Cast:** {{ C[k] }}{% endif %}\n\n<br style=\"clear:both\"><small>This product uses the TMDB API but is not endorsed or certified by TMDB.</small>\n{%- else -%}\nFilm non piu' in programma.\n{%- endif -%}"
+          }
+         }
+        }
+       }
+      },
+      {
+       "type": "custom:button-card",
+       "template": "film_row",
+       "entity": "sensor.film_stasera",
+       "variables": {
+        "i": 17
+       },
+       "grid_options": {
+        "columns": "full"
+       },
+       "tap_action": {
+        "action": "fire-dom-event",
+        "browser_mod": {
+         "service": "browser_mod.popup",
+         "data": {
+          "dismissable": true,
+          "content": {
+           "type": "markdown",
+           "content": "{%- set a = states.sensor.film_stasera.attributes -%}\n{%- set ora = now().timestamp() -%}\n{%- set ns = namespace(k=-1, n=0) -%}\n{%- for j in range(a.titles | length) if a.starts[j] + 9000 >= ora -%}\n{%- if ns.n == 17 %}{% set ns.k = j %}{% endif -%}\n{%- set ns.n = ns.n + 1 -%}\n{%- endfor -%}\n{%- set k = ns.k -%}\n{%- set P = a.posters | default([]) -%}{%- set O = a.overviews | default([]) -%}\n{%- set C = a.casts | default([]) -%}{%- set Y = a.years | default([]) -%}\n{%- if k >= 0 -%}\n{% if P | length > k and P[k] %}<img src=\"{{ P[k] }}\" width=\"150\" style=\"float:left;margin:0 16px 8px 0;border-radius:8px\">{% endif %}\n**{{ a.titles[k] }}**{% if Y | length > k and Y[k] %} ({{ Y[k] }}){% endif %}\n\n{{ a.channels[k] }} · {{ a.starts[k] | timestamp_custom('%H:%M') }}{% if a.genres[k] %} · {{ a.genres[k] }}{% endif %}\n\n{% if O | length > k and O[k] %}{{ O[k] }}{% else %}Nessuna trama disponibile.{% endif %}\n\n{% if C | length > k and C[k] %}**Cast:** {{ C[k] }}{% endif %}\n\n<br style=\"clear:both\"><small>This product uses the TMDB API but is not endorsed or certified by TMDB.</small>\n{%- else -%}\nFilm non piu' in programma.\n{%- endif -%}"
+          }
+         }
+        }
+       }
+      },
+      {
+       "type": "custom:button-card",
+       "template": "film_row",
+       "entity": "sensor.film_stasera",
+       "variables": {
+        "i": 18
+       },
+       "grid_options": {
+        "columns": "full"
+       },
+       "tap_action": {
+        "action": "fire-dom-event",
+        "browser_mod": {
+         "service": "browser_mod.popup",
+         "data": {
+          "dismissable": true,
+          "content": {
+           "type": "markdown",
+           "content": "{%- set a = states.sensor.film_stasera.attributes -%}\n{%- set ora = now().timestamp() -%}\n{%- set ns = namespace(k=-1, n=0) -%}\n{%- for j in range(a.titles | length) if a.starts[j] + 9000 >= ora -%}\n{%- if ns.n == 18 %}{% set ns.k = j %}{% endif -%}\n{%- set ns.n = ns.n + 1 -%}\n{%- endfor -%}\n{%- set k = ns.k -%}\n{%- set P = a.posters | default([]) -%}{%- set O = a.overviews | default([]) -%}\n{%- set C = a.casts | default([]) -%}{%- set Y = a.years | default([]) -%}\n{%- if k >= 0 -%}\n{% if P | length > k and P[k] %}<img src=\"{{ P[k] }}\" width=\"150\" style=\"float:left;margin:0 16px 8px 0;border-radius:8px\">{% endif %}\n**{{ a.titles[k] }}**{% if Y | length > k and Y[k] %} ({{ Y[k] }}){% endif %}\n\n{{ a.channels[k] }} · {{ a.starts[k] | timestamp_custom('%H:%M') }}{% if a.genres[k] %} · {{ a.genres[k] }}{% endif %}\n\n{% if O | length > k and O[k] %}{{ O[k] }}{% else %}Nessuna trama disponibile.{% endif %}\n\n{% if C | length > k and C[k] %}**Cast:** {{ C[k] }}{% endif %}\n\n<br style=\"clear:both\"><small>This product uses the TMDB API but is not endorsed or certified by TMDB.</small>\n{%- else -%}\nFilm non piu' in programma.\n{%- endif -%}"
+          }
+         }
+        }
+       }
+      },
+      {
+       "type": "custom:button-card",
+       "template": "film_row",
+       "entity": "sensor.film_stasera",
+       "variables": {
+        "i": 19
+       },
+       "grid_options": {
+        "columns": "full"
+       },
+       "tap_action": {
+        "action": "fire-dom-event",
+        "browser_mod": {
+         "service": "browser_mod.popup",
+         "data": {
+          "dismissable": true,
+          "content": {
+           "type": "markdown",
+           "content": "{%- set a = states.sensor.film_stasera.attributes -%}\n{%- set ora = now().timestamp() -%}\n{%- set ns = namespace(k=-1, n=0) -%}\n{%- for j in range(a.titles | length) if a.starts[j] + 9000 >= ora -%}\n{%- if ns.n == 19 %}{% set ns.k = j %}{% endif -%}\n{%- set ns.n = ns.n + 1 -%}\n{%- endfor -%}\n{%- set k = ns.k -%}\n{%- set P = a.posters | default([]) -%}{%- set O = a.overviews | default([]) -%}\n{%- set C = a.casts | default([]) -%}{%- set Y = a.years | default([]) -%}\n{%- if k >= 0 -%}\n{% if P | length > k and P[k] %}<img src=\"{{ P[k] }}\" width=\"150\" style=\"float:left;margin:0 16px 8px 0;border-radius:8px\">{% endif %}\n**{{ a.titles[k] }}**{% if Y | length > k and Y[k] %} ({{ Y[k] }}){% endif %}\n\n{{ a.channels[k] }} · {{ a.starts[k] | timestamp_custom('%H:%M') }}{% if a.genres[k] %} · {{ a.genres[k] }}{% endif %}\n\n{% if O | length > k and O[k] %}{{ O[k] }}{% else %}Nessuna trama disponibile.{% endif %}\n\n{% if C | length > k and C[k] %}**Cast:** {{ C[k] }}{% endif %}\n\n<br style=\"clear:both\"><small>This product uses the TMDB API but is not endorsed or certified by TMDB.</small>\n{%- else -%}\nFilm non piu' in programma.\n{%- endif -%}"
+          }
+         }
+        }
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Programmi",
+   "path": "programmi",
+   "type": "sections",
+   "icon": "mdi:television-classic",
+   "max_columns": 2,
+   "sections": [
+    {
+     "type": "grid",
+     "cards": [
+      {
+       "type": "heading",
+       "heading": "Programmi in TV stasera",
+       "heading_style": "title",
+       "icon": "mdi:television-classic"
+      },
+      {
+       "type": "custom:button-card",
+       "name": "← Film stasera",
+       "show_icon": false,
+       "grid_options": {
+        "columns": "full"
+       },
+       "styles": {
+        "card": [
+         {
+          "background": "none"
+         },
+         {
+          "box-shadow": "none"
+         },
+         {
+          "padding": "0 12px"
+         }
+        ],
+        "name": [
+         {
+          "color": "var(--primary-color)"
+         },
+         {
+          "font-weight": "500"
+         },
+         {
+          "font-size": "16px"
+         },
+         {
+          "justify-self": "start"
+         }
+        ]
+       },
+       "tap_action": {
+        "action": "navigate",
+        "navigation_path": "/film-stasera/stasera"
+       }
+      },
+      {
+       "type": "custom:button-card",
+       "template": "prog_row",
+       "entity": "sensor.film_stasera",
+       "variables": {
+        "i": 0
+       },
+       "grid_options": {
+        "columns": "full"
+       }
+      },
+      {
+       "type": "custom:button-card",
+       "template": "prog_row",
+       "entity": "sensor.film_stasera",
+       "variables": {
+        "i": 1
+       },
+       "grid_options": {
+        "columns": "full"
+       }
+      },
+      {
+       "type": "custom:button-card",
+       "template": "prog_row",
+       "entity": "sensor.film_stasera",
+       "variables": {
+        "i": 2
+       },
+       "grid_options": {
+        "columns": "full"
+       }
+      },
+      {
+       "type": "custom:button-card",
+       "template": "prog_row",
+       "entity": "sensor.film_stasera",
+       "variables": {
+        "i": 3
+       },
+       "grid_options": {
+        "columns": "full"
+       }
+      },
+      {
+       "type": "custom:button-card",
+       "template": "prog_row",
+       "entity": "sensor.film_stasera",
+       "variables": {
+        "i": 4
+       },
+       "grid_options": {
+        "columns": "full"
+       }
+      },
+      {
+       "type": "custom:button-card",
+       "template": "prog_row",
+       "entity": "sensor.film_stasera",
+       "variables": {
+        "i": 5
+       },
+       "grid_options": {
+        "columns": "full"
+       }
+      },
+      {
+       "type": "custom:button-card",
+       "template": "prog_row",
+       "entity": "sensor.film_stasera",
+       "variables": {
+        "i": 6
+       },
+       "grid_options": {
+        "columns": "full"
+       }
+      },
+      {
+       "type": "custom:button-card",
+       "template": "prog_row",
+       "entity": "sensor.film_stasera",
+       "variables": {
+        "i": 7
+       },
+       "grid_options": {
+        "columns": "full"
+       }
+      },
+      {
+       "type": "custom:button-card",
+       "template": "prog_row",
+       "entity": "sensor.film_stasera",
+       "variables": {
+        "i": 8
+       },
+       "grid_options": {
+        "columns": "full"
+       }
+      },
+      {
+       "type": "custom:button-card",
+       "template": "prog_row",
+       "entity": "sensor.film_stasera",
+       "variables": {
+        "i": 9
+       },
+       "grid_options": {
+        "columns": "full"
+       }
+      },
+      {
+       "type": "custom:button-card",
+       "template": "prog_row",
+       "entity": "sensor.film_stasera",
+       "variables": {
+        "i": 10
+       },
+       "grid_options": {
+        "columns": "full"
+       }
+      },
+      {
+       "type": "custom:button-card",
+       "template": "prog_row",
+       "entity": "sensor.film_stasera",
+       "variables": {
+        "i": 11
+       },
+       "grid_options": {
+        "columns": "full"
+       }
+      },
+      {
+       "type": "custom:button-card",
+       "template": "prog_row",
+       "entity": "sensor.film_stasera",
+       "variables": {
+        "i": 12
+       },
+       "grid_options": {
+        "columns": "full"
+       }
+      },
+      {
+       "type": "custom:button-card",
+       "template": "prog_row",
+       "entity": "sensor.film_stasera",
+       "variables": {
+        "i": 13
+       },
+       "grid_options": {
+        "columns": "full"
+       }
+      },
+      {
+       "type": "custom:button-card",
+       "template": "prog_row",
+       "entity": "sensor.film_stasera",
+       "variables": {
+        "i": 14
+       },
+       "grid_options": {
+        "columns": "full"
+       }
+      },
+      {
+       "type": "custom:button-card",
+       "template": "prog_row",
+       "entity": "sensor.film_stasera",
+       "variables": {
+        "i": 15
+       },
+       "grid_options": {
+        "columns": "full"
+       }
+      },
+      {
+       "type": "custom:button-card",
+       "template": "prog_row",
+       "entity": "sensor.film_stasera",
+       "variables": {
+        "i": 16
+       },
+       "grid_options": {
+        "columns": "full"
+       }
+      },
+      {
+       "type": "custom:button-card",
+       "template": "prog_row",
+       "entity": "sensor.film_stasera",
+       "variables": {
+        "i": 17
+       },
+       "grid_options": {
+        "columns": "full"
+       }
+      },
+      {
+       "type": "custom:button-card",
+       "template": "prog_row",
+       "entity": "sensor.film_stasera",
+       "variables": {
+        "i": 18
+       },
+       "grid_options": {
+        "columns": "full"
+       }
+      },
+      {
+       "type": "custom:button-card",
+       "template": "prog_row",
+       "entity": "sensor.film_stasera",
+       "variables": {
+        "i": 19
+       },
+       "grid_options": {
+        "columns": "full"
+       }
+      }
+     ]
+    }
+   ]
+  }
+ ],
  "button_card_templates": {
   "film_row": {
    "show_icon": false,
@@ -53,488 +873,75 @@
     "l": "[[[ const a = entity.attributes; const now = Date.now() / 1000; const esc = (s) => String(s == null ? '' : s).replace(/[&<>\"']/g, (c) => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '\"': '&quot;', \"'\": '&#39;'}[c])); const ks = (a.titles || []).map((_, j) => j).filter((j) => a.starts[j] + 9000 >= now); const k = ks[variables.i]; if (k === undefined) return ''; const logo = (a.logos || [])[k]; if (logo) return '<img src=\"' + esc(logo) + '\" height=\"30\" style=\"background:#fff;border-radius:6px;padding:2px 8px\">'; return '<span>' + esc(a.channels[k]) + '</span>'; ]]]",
     "n": "[[[ const a = entity.attributes; const now = Date.now() / 1000; const esc = (s) => String(s == null ? '' : s).replace(/[&<>\"']/g, (c) => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '\"': '&quot;', \"'\": '&#39;'}[c])); const ks = (a.titles || []).map((_, j) => j).filter((j) => a.starts[j] + 9000 >= now); const k = ks[variables.i]; if (k === undefined) return ''; const sub = [a.channels[k], a.genres[k]].filter(Boolean).map(esc).join(' · '); return '<b>' + esc(a.titles[k]) + '</b><br><small>' + sub + '</small>'; ]]]"
    }
-  }
- },
- "cards": [
-  {
-   "type": "custom:button-card",
-   "template": "film_row",
-   "entity": "sensor.film_stasera",
-   "variables": {
-    "i": 0
-   },
-   "grid_options": {
-    "columns": "full"
-   },
-   "tap_action": {
-    "action": "fire-dom-event",
-    "browser_mod": {
-     "service": "browser_mod.popup",
-     "data": {
-      "dismissable": true,
-      "content": {
-       "type": "markdown",
-       "content": "{%- set a = states.sensor.film_stasera.attributes -%}\n{%- set ora = now().timestamp() -%}\n{%- set ns = namespace(k=-1, n=0) -%}\n{%- for j in range(a.titles | length) if a.starts[j] + 9000 >= ora -%}\n{%- if ns.n == 0 %}{% set ns.k = j %}{% endif -%}\n{%- set ns.n = ns.n + 1 -%}\n{%- endfor -%}\n{%- set k = ns.k -%}\n{%- set P = a.posters | default([]) -%}{%- set O = a.overviews | default([]) -%}\n{%- set C = a.casts | default([]) -%}{%- set Y = a.years | default([]) -%}\n{%- if k >= 0 -%}\n{% if P | length > k and P[k] %}<img src=\"{{ P[k] }}\" width=\"150\" style=\"float:left;margin:0 16px 8px 0;border-radius:8px\">{% endif %}\n**{{ a.titles[k] }}**{% if Y | length > k and Y[k] %} ({{ Y[k] }}){% endif %}\n\n{{ a.channels[k] }} · {{ a.starts[k] | timestamp_custom('%H:%M') }}{% if a.genres[k] %} · {{ a.genres[k] }}{% endif %}\n\n{% if O | length > k and O[k] %}{{ O[k] }}{% else %}Nessuna trama disponibile.{% endif %}\n\n{% if C | length > k and C[k] %}**Cast:** {{ C[k] }}{% endif %}\n\n<br style=\"clear:both\"><small>This product uses the TMDB API but is not endorsed or certified by TMDB.</small>\n{%- else -%}\nFilm non piu' in programma.\n{%- endif -%}"
-      }
-     }
-    }
-   }
   },
-  {
-   "type": "custom:button-card",
-   "template": "film_row",
-   "entity": "sensor.film_stasera",
-   "variables": {
-    "i": 1
-   },
-   "grid_options": {
-    "columns": "full"
-   },
-   "tap_action": {
-    "action": "fire-dom-event",
-    "browser_mod": {
-     "service": "browser_mod.popup",
-     "data": {
-      "dismissable": true,
-      "content": {
-       "type": "markdown",
-       "content": "{%- set a = states.sensor.film_stasera.attributes -%}\n{%- set ora = now().timestamp() -%}\n{%- set ns = namespace(k=-1, n=0) -%}\n{%- for j in range(a.titles | length) if a.starts[j] + 9000 >= ora -%}\n{%- if ns.n == 1 %}{% set ns.k = j %}{% endif -%}\n{%- set ns.n = ns.n + 1 -%}\n{%- endfor -%}\n{%- set k = ns.k -%}\n{%- set P = a.posters | default([]) -%}{%- set O = a.overviews | default([]) -%}\n{%- set C = a.casts | default([]) -%}{%- set Y = a.years | default([]) -%}\n{%- if k >= 0 -%}\n{% if P | length > k and P[k] %}<img src=\"{{ P[k] }}\" width=\"150\" style=\"float:left;margin:0 16px 8px 0;border-radius:8px\">{% endif %}\n**{{ a.titles[k] }}**{% if Y | length > k and Y[k] %} ({{ Y[k] }}){% endif %}\n\n{{ a.channels[k] }} · {{ a.starts[k] | timestamp_custom('%H:%M') }}{% if a.genres[k] %} · {{ a.genres[k] }}{% endif %}\n\n{% if O | length > k and O[k] %}{{ O[k] }}{% else %}Nessuna trama disponibile.{% endif %}\n\n{% if C | length > k and C[k] %}**Cast:** {{ C[k] }}{% endif %}\n\n<br style=\"clear:both\"><small>This product uses the TMDB API but is not endorsed or certified by TMDB.</small>\n{%- else -%}\nFilm non piu' in programma.\n{%- endif -%}"
-      }
+  "prog_row": {
+   "show_icon": false,
+   "show_name": false,
+   "show_state": false,
+   "styles": {
+    "card": [
+     {
+      "padding": "6px 12px"
+     },
+     {
+      "display": "[[[ const a = entity.attributes; const k = variables.i; const esc = (s) => String(s == null ? '' : s).replace(/[&<>\"']/g, (c) => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '\"': '&quot;', \"'\": '&#39;'}[c])); if (k >= (a.prog_channels || []).length) return 'none'; const hm = (t) => new Date(t * 1000).toLocaleTimeString('it-IT', {hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Rome'}); return 'block'; ]]]"
      }
-    }
-   }
-  },
-  {
-   "type": "custom:button-card",
-   "template": "film_row",
-   "entity": "sensor.film_stasera",
-   "variables": {
-    "i": 2
-   },
-   "grid_options": {
-    "columns": "full"
-   },
-   "tap_action": {
-    "action": "fire-dom-event",
-    "browser_mod": {
-     "service": "browser_mod.popup",
-     "data": {
-      "dismissable": true,
-      "content": {
-       "type": "markdown",
-       "content": "{%- set a = states.sensor.film_stasera.attributes -%}\n{%- set ora = now().timestamp() -%}\n{%- set ns = namespace(k=-1, n=0) -%}\n{%- for j in range(a.titles | length) if a.starts[j] + 9000 >= ora -%}\n{%- if ns.n == 2 %}{% set ns.k = j %}{% endif -%}\n{%- set ns.n = ns.n + 1 -%}\n{%- endfor -%}\n{%- set k = ns.k -%}\n{%- set P = a.posters | default([]) -%}{%- set O = a.overviews | default([]) -%}\n{%- set C = a.casts | default([]) -%}{%- set Y = a.years | default([]) -%}\n{%- if k >= 0 -%}\n{% if P | length > k and P[k] %}<img src=\"{{ P[k] }}\" width=\"150\" style=\"float:left;margin:0 16px 8px 0;border-radius:8px\">{% endif %}\n**{{ a.titles[k] }}**{% if Y | length > k and Y[k] %} ({{ Y[k] }}){% endif %}\n\n{{ a.channels[k] }} · {{ a.starts[k] | timestamp_custom('%H:%M') }}{% if a.genres[k] %} · {{ a.genres[k] }}{% endif %}\n\n{% if O | length > k and O[k] %}{{ O[k] }}{% else %}Nessuna trama disponibile.{% endif %}\n\n{% if C | length > k and C[k] %}**Cast:** {{ C[k] }}{% endif %}\n\n<br style=\"clear:both\"><small>This product uses the TMDB API but is not endorsed or certified by TMDB.</small>\n{%- else -%}\nFilm non piu' in programma.\n{%- endif -%}"
-      }
+    ],
+    "grid": [
+     {
+      "grid-template-areas": "\"c p\" \"c l\""
+     },
+     {
+      "grid-template-columns": "150px 1fr"
+     },
+     {
+      "align-items": "center"
+     },
+     {
+      "column-gap": "12px"
+     },
+     {
+      "row-gap": "2px"
      }
-    }
-   }
-  },
-  {
-   "type": "custom:button-card",
-   "template": "film_row",
-   "entity": "sensor.film_stasera",
-   "variables": {
-    "i": 3
-   },
-   "grid_options": {
-    "columns": "full"
-   },
-   "tap_action": {
-    "action": "fire-dom-event",
-    "browser_mod": {
-     "service": "browser_mod.popup",
-     "data": {
-      "dismissable": true,
-      "content": {
-       "type": "markdown",
-       "content": "{%- set a = states.sensor.film_stasera.attributes -%}\n{%- set ora = now().timestamp() -%}\n{%- set ns = namespace(k=-1, n=0) -%}\n{%- for j in range(a.titles | length) if a.starts[j] + 9000 >= ora -%}\n{%- if ns.n == 3 %}{% set ns.k = j %}{% endif -%}\n{%- set ns.n = ns.n + 1 -%}\n{%- endfor -%}\n{%- set k = ns.k -%}\n{%- set P = a.posters | default([]) -%}{%- set O = a.overviews | default([]) -%}\n{%- set C = a.casts | default([]) -%}{%- set Y = a.years | default([]) -%}\n{%- if k >= 0 -%}\n{% if P | length > k and P[k] %}<img src=\"{{ P[k] }}\" width=\"150\" style=\"float:left;margin:0 16px 8px 0;border-radius:8px\">{% endif %}\n**{{ a.titles[k] }}**{% if Y | length > k and Y[k] %} ({{ Y[k] }}){% endif %}\n\n{{ a.channels[k] }} · {{ a.starts[k] | timestamp_custom('%H:%M') }}{% if a.genres[k] %} · {{ a.genres[k] }}{% endif %}\n\n{% if O | length > k and O[k] %}{{ O[k] }}{% else %}Nessuna trama disponibile.{% endif %}\n\n{% if C | length > k and C[k] %}**Cast:** {{ C[k] }}{% endif %}\n\n<br style=\"clear:both\"><small>This product uses the TMDB API but is not endorsed or certified by TMDB.</small>\n{%- else -%}\nFilm non piu' in programma.\n{%- endif -%}"
+    ],
+    "custom_fields": {
+     "c": [
+      {
+       "justify-self": "start"
+      },
+      {
+       "font-weight": "bold"
       }
-     }
-    }
-   }
-  },
-  {
-   "type": "custom:button-card",
-   "template": "film_row",
-   "entity": "sensor.film_stasera",
-   "variables": {
-    "i": 4
-   },
-   "grid_options": {
-    "columns": "full"
-   },
-   "tap_action": {
-    "action": "fire-dom-event",
-    "browser_mod": {
-     "service": "browser_mod.popup",
-     "data": {
-      "dismissable": true,
-      "content": {
-       "type": "markdown",
-       "content": "{%- set a = states.sensor.film_stasera.attributes -%}\n{%- set ora = now().timestamp() -%}\n{%- set ns = namespace(k=-1, n=0) -%}\n{%- for j in range(a.titles | length) if a.starts[j] + 9000 >= ora -%}\n{%- if ns.n == 4 %}{% set ns.k = j %}{% endif -%}\n{%- set ns.n = ns.n + 1 -%}\n{%- endfor -%}\n{%- set k = ns.k -%}\n{%- set P = a.posters | default([]) -%}{%- set O = a.overviews | default([]) -%}\n{%- set C = a.casts | default([]) -%}{%- set Y = a.years | default([]) -%}\n{%- if k >= 0 -%}\n{% if P | length > k and P[k] %}<img src=\"{{ P[k] }}\" width=\"150\" style=\"float:left;margin:0 16px 8px 0;border-radius:8px\">{% endif %}\n**{{ a.titles[k] }}**{% if Y | length > k and Y[k] %} ({{ Y[k] }}){% endif %}\n\n{{ a.channels[k] }} · {{ a.starts[k] | timestamp_custom('%H:%M') }}{% if a.genres[k] %} · {{ a.genres[k] }}{% endif %}\n\n{% if O | length > k and O[k] %}{{ O[k] }}{% else %}Nessuna trama disponibile.{% endif %}\n\n{% if C | length > k and C[k] %}**Cast:** {{ C[k] }}{% endif %}\n\n<br style=\"clear:both\"><small>This product uses the TMDB API but is not endorsed or certified by TMDB.</small>\n{%- else -%}\nFilm non piu' in programma.\n{%- endif -%}"
+     ],
+     "p": [
+      {
+       "text-align": "left"
+      },
+      {
+       "overflow": "hidden"
       }
-     }
-    }
-   }
-  },
-  {
-   "type": "custom:button-card",
-   "template": "film_row",
-   "entity": "sensor.film_stasera",
-   "variables": {
-    "i": 5
-   },
-   "grid_options": {
-    "columns": "full"
-   },
-   "tap_action": {
-    "action": "fire-dom-event",
-    "browser_mod": {
-     "service": "browser_mod.popup",
-     "data": {
-      "dismissable": true,
-      "content": {
-       "type": "markdown",
-       "content": "{%- set a = states.sensor.film_stasera.attributes -%}\n{%- set ora = now().timestamp() -%}\n{%- set ns = namespace(k=-1, n=0) -%}\n{%- for j in range(a.titles | length) if a.starts[j] + 9000 >= ora -%}\n{%- if ns.n == 5 %}{% set ns.k = j %}{% endif -%}\n{%- set ns.n = ns.n + 1 -%}\n{%- endfor -%}\n{%- set k = ns.k -%}\n{%- set P = a.posters | default([]) -%}{%- set O = a.overviews | default([]) -%}\n{%- set C = a.casts | default([]) -%}{%- set Y = a.years | default([]) -%}\n{%- if k >= 0 -%}\n{% if P | length > k and P[k] %}<img src=\"{{ P[k] }}\" width=\"150\" style=\"float:left;margin:0 16px 8px 0;border-radius:8px\">{% endif %}\n**{{ a.titles[k] }}**{% if Y | length > k and Y[k] %} ({{ Y[k] }}){% endif %}\n\n{{ a.channels[k] }} · {{ a.starts[k] | timestamp_custom('%H:%M') }}{% if a.genres[k] %} · {{ a.genres[k] }}{% endif %}\n\n{% if O | length > k and O[k] %}{{ O[k] }}{% else %}Nessuna trama disponibile.{% endif %}\n\n{% if C | length > k and C[k] %}**Cast:** {{ C[k] }}{% endif %}\n\n<br style=\"clear:both\"><small>This product uses the TMDB API but is not endorsed or certified by TMDB.</small>\n{%- else -%}\nFilm non piu' in programma.\n{%- endif -%}"
+     ],
+     "l": [
+      {
+       "text-align": "left"
+      },
+      {
+       "overflow": "hidden"
+      },
+      {
+       "opacity": "0.7"
+      },
+      {
+       "font-size": "0.9em"
       }
-     }
+     ]
     }
-   }
-  },
-  {
-   "type": "custom:button-card",
-   "template": "film_row",
-   "entity": "sensor.film_stasera",
-   "variables": {
-    "i": 6
    },
-   "grid_options": {
-    "columns": "full"
-   },
-   "tap_action": {
-    "action": "fire-dom-event",
-    "browser_mod": {
-     "service": "browser_mod.popup",
-     "data": {
-      "dismissable": true,
-      "content": {
-       "type": "markdown",
-       "content": "{%- set a = states.sensor.film_stasera.attributes -%}\n{%- set ora = now().timestamp() -%}\n{%- set ns = namespace(k=-1, n=0) -%}\n{%- for j in range(a.titles | length) if a.starts[j] + 9000 >= ora -%}\n{%- if ns.n == 6 %}{% set ns.k = j %}{% endif -%}\n{%- set ns.n = ns.n + 1 -%}\n{%- endfor -%}\n{%- set k = ns.k -%}\n{%- set P = a.posters | default([]) -%}{%- set O = a.overviews | default([]) -%}\n{%- set C = a.casts | default([]) -%}{%- set Y = a.years | default([]) -%}\n{%- if k >= 0 -%}\n{% if P | length > k and P[k] %}<img src=\"{{ P[k] }}\" width=\"150\" style=\"float:left;margin:0 16px 8px 0;border-radius:8px\">{% endif %}\n**{{ a.titles[k] }}**{% if Y | length > k and Y[k] %} ({{ Y[k] }}){% endif %}\n\n{{ a.channels[k] }} · {{ a.starts[k] | timestamp_custom('%H:%M') }}{% if a.genres[k] %} · {{ a.genres[k] }}{% endif %}\n\n{% if O | length > k and O[k] %}{{ O[k] }}{% else %}Nessuna trama disponibile.{% endif %}\n\n{% if C | length > k and C[k] %}**Cast:** {{ C[k] }}{% endif %}\n\n<br style=\"clear:both\"><small>This product uses the TMDB API but is not endorsed or certified by TMDB.</small>\n{%- else -%}\nFilm non piu' in programma.\n{%- endif -%}"
-      }
-     }
-    }
-   }
-  },
-  {
-   "type": "custom:button-card",
-   "template": "film_row",
-   "entity": "sensor.film_stasera",
-   "variables": {
-    "i": 7
-   },
-   "grid_options": {
-    "columns": "full"
-   },
-   "tap_action": {
-    "action": "fire-dom-event",
-    "browser_mod": {
-     "service": "browser_mod.popup",
-     "data": {
-      "dismissable": true,
-      "content": {
-       "type": "markdown",
-       "content": "{%- set a = states.sensor.film_stasera.attributes -%}\n{%- set ora = now().timestamp() -%}\n{%- set ns = namespace(k=-1, n=0) -%}\n{%- for j in range(a.titles | length) if a.starts[j] + 9000 >= ora -%}\n{%- if ns.n == 7 %}{% set ns.k = j %}{% endif -%}\n{%- set ns.n = ns.n + 1 -%}\n{%- endfor -%}\n{%- set k = ns.k -%}\n{%- set P = a.posters | default([]) -%}{%- set O = a.overviews | default([]) -%}\n{%- set C = a.casts | default([]) -%}{%- set Y = a.years | default([]) -%}\n{%- if k >= 0 -%}\n{% if P | length > k and P[k] %}<img src=\"{{ P[k] }}\" width=\"150\" style=\"float:left;margin:0 16px 8px 0;border-radius:8px\">{% endif %}\n**{{ a.titles[k] }}**{% if Y | length > k and Y[k] %} ({{ Y[k] }}){% endif %}\n\n{{ a.channels[k] }} · {{ a.starts[k] | timestamp_custom('%H:%M') }}{% if a.genres[k] %} · {{ a.genres[k] }}{% endif %}\n\n{% if O | length > k and O[k] %}{{ O[k] }}{% else %}Nessuna trama disponibile.{% endif %}\n\n{% if C | length > k and C[k] %}**Cast:** {{ C[k] }}{% endif %}\n\n<br style=\"clear:both\"><small>This product uses the TMDB API but is not endorsed or certified by TMDB.</small>\n{%- else -%}\nFilm non piu' in programma.\n{%- endif -%}"
-      }
-     }
-    }
-   }
-  },
-  {
-   "type": "custom:button-card",
-   "template": "film_row",
-   "entity": "sensor.film_stasera",
-   "variables": {
-    "i": 8
-   },
-   "grid_options": {
-    "columns": "full"
-   },
-   "tap_action": {
-    "action": "fire-dom-event",
-    "browser_mod": {
-     "service": "browser_mod.popup",
-     "data": {
-      "dismissable": true,
-      "content": {
-       "type": "markdown",
-       "content": "{%- set a = states.sensor.film_stasera.attributes -%}\n{%- set ora = now().timestamp() -%}\n{%- set ns = namespace(k=-1, n=0) -%}\n{%- for j in range(a.titles | length) if a.starts[j] + 9000 >= ora -%}\n{%- if ns.n == 8 %}{% set ns.k = j %}{% endif -%}\n{%- set ns.n = ns.n + 1 -%}\n{%- endfor -%}\n{%- set k = ns.k -%}\n{%- set P = a.posters | default([]) -%}{%- set O = a.overviews | default([]) -%}\n{%- set C = a.casts | default([]) -%}{%- set Y = a.years | default([]) -%}\n{%- if k >= 0 -%}\n{% if P | length > k and P[k] %}<img src=\"{{ P[k] }}\" width=\"150\" style=\"float:left;margin:0 16px 8px 0;border-radius:8px\">{% endif %}\n**{{ a.titles[k] }}**{% if Y | length > k and Y[k] %} ({{ Y[k] }}){% endif %}\n\n{{ a.channels[k] }} · {{ a.starts[k] | timestamp_custom('%H:%M') }}{% if a.genres[k] %} · {{ a.genres[k] }}{% endif %}\n\n{% if O | length > k and O[k] %}{{ O[k] }}{% else %}Nessuna trama disponibile.{% endif %}\n\n{% if C | length > k and C[k] %}**Cast:** {{ C[k] }}{% endif %}\n\n<br style=\"clear:both\"><small>This product uses the TMDB API but is not endorsed or certified by TMDB.</small>\n{%- else -%}\nFilm non piu' in programma.\n{%- endif -%}"
-      }
-     }
-    }
-   }
-  },
-  {
-   "type": "custom:button-card",
-   "template": "film_row",
-   "entity": "sensor.film_stasera",
-   "variables": {
-    "i": 9
-   },
-   "grid_options": {
-    "columns": "full"
-   },
-   "tap_action": {
-    "action": "fire-dom-event",
-    "browser_mod": {
-     "service": "browser_mod.popup",
-     "data": {
-      "dismissable": true,
-      "content": {
-       "type": "markdown",
-       "content": "{%- set a = states.sensor.film_stasera.attributes -%}\n{%- set ora = now().timestamp() -%}\n{%- set ns = namespace(k=-1, n=0) -%}\n{%- for j in range(a.titles | length) if a.starts[j] + 9000 >= ora -%}\n{%- if ns.n == 9 %}{% set ns.k = j %}{% endif -%}\n{%- set ns.n = ns.n + 1 -%}\n{%- endfor -%}\n{%- set k = ns.k -%}\n{%- set P = a.posters | default([]) -%}{%- set O = a.overviews | default([]) -%}\n{%- set C = a.casts | default([]) -%}{%- set Y = a.years | default([]) -%}\n{%- if k >= 0 -%}\n{% if P | length > k and P[k] %}<img src=\"{{ P[k] }}\" width=\"150\" style=\"float:left;margin:0 16px 8px 0;border-radius:8px\">{% endif %}\n**{{ a.titles[k] }}**{% if Y | length > k and Y[k] %} ({{ Y[k] }}){% endif %}\n\n{{ a.channels[k] }} · {{ a.starts[k] | timestamp_custom('%H:%M') }}{% if a.genres[k] %} · {{ a.genres[k] }}{% endif %}\n\n{% if O | length > k and O[k] %}{{ O[k] }}{% else %}Nessuna trama disponibile.{% endif %}\n\n{% if C | length > k and C[k] %}**Cast:** {{ C[k] }}{% endif %}\n\n<br style=\"clear:both\"><small>This product uses the TMDB API but is not endorsed or certified by TMDB.</small>\n{%- else -%}\nFilm non piu' in programma.\n{%- endif -%}"
-      }
-     }
-    }
-   }
-  },
-  {
-   "type": "custom:button-card",
-   "template": "film_row",
-   "entity": "sensor.film_stasera",
-   "variables": {
-    "i": 10
-   },
-   "grid_options": {
-    "columns": "full"
-   },
-   "tap_action": {
-    "action": "fire-dom-event",
-    "browser_mod": {
-     "service": "browser_mod.popup",
-     "data": {
-      "dismissable": true,
-      "content": {
-       "type": "markdown",
-       "content": "{%- set a = states.sensor.film_stasera.attributes -%}\n{%- set ora = now().timestamp() -%}\n{%- set ns = namespace(k=-1, n=0) -%}\n{%- for j in range(a.titles | length) if a.starts[j] + 9000 >= ora -%}\n{%- if ns.n == 10 %}{% set ns.k = j %}{% endif -%}\n{%- set ns.n = ns.n + 1 -%}\n{%- endfor -%}\n{%- set k = ns.k -%}\n{%- set P = a.posters | default([]) -%}{%- set O = a.overviews | default([]) -%}\n{%- set C = a.casts | default([]) -%}{%- set Y = a.years | default([]) -%}\n{%- if k >= 0 -%}\n{% if P | length > k and P[k] %}<img src=\"{{ P[k] }}\" width=\"150\" style=\"float:left;margin:0 16px 8px 0;border-radius:8px\">{% endif %}\n**{{ a.titles[k] }}**{% if Y | length > k and Y[k] %} ({{ Y[k] }}){% endif %}\n\n{{ a.channels[k] }} · {{ a.starts[k] | timestamp_custom('%H:%M') }}{% if a.genres[k] %} · {{ a.genres[k] }}{% endif %}\n\n{% if O | length > k and O[k] %}{{ O[k] }}{% else %}Nessuna trama disponibile.{% endif %}\n\n{% if C | length > k and C[k] %}**Cast:** {{ C[k] }}{% endif %}\n\n<br style=\"clear:both\"><small>This product uses the TMDB API but is not endorsed or certified by TMDB.</small>\n{%- else -%}\nFilm non piu' in programma.\n{%- endif -%}"
-      }
-     }
-    }
-   }
-  },
-  {
-   "type": "custom:button-card",
-   "template": "film_row",
-   "entity": "sensor.film_stasera",
-   "variables": {
-    "i": 11
-   },
-   "grid_options": {
-    "columns": "full"
-   },
-   "tap_action": {
-    "action": "fire-dom-event",
-    "browser_mod": {
-     "service": "browser_mod.popup",
-     "data": {
-      "dismissable": true,
-      "content": {
-       "type": "markdown",
-       "content": "{%- set a = states.sensor.film_stasera.attributes -%}\n{%- set ora = now().timestamp() -%}\n{%- set ns = namespace(k=-1, n=0) -%}\n{%- for j in range(a.titles | length) if a.starts[j] + 9000 >= ora -%}\n{%- if ns.n == 11 %}{% set ns.k = j %}{% endif -%}\n{%- set ns.n = ns.n + 1 -%}\n{%- endfor -%}\n{%- set k = ns.k -%}\n{%- set P = a.posters | default([]) -%}{%- set O = a.overviews | default([]) -%}\n{%- set C = a.casts | default([]) -%}{%- set Y = a.years | default([]) -%}\n{%- if k >= 0 -%}\n{% if P | length > k and P[k] %}<img src=\"{{ P[k] }}\" width=\"150\" style=\"float:left;margin:0 16px 8px 0;border-radius:8px\">{% endif %}\n**{{ a.titles[k] }}**{% if Y | length > k and Y[k] %} ({{ Y[k] }}){% endif %}\n\n{{ a.channels[k] }} · {{ a.starts[k] | timestamp_custom('%H:%M') }}{% if a.genres[k] %} · {{ a.genres[k] }}{% endif %}\n\n{% if O | length > k and O[k] %}{{ O[k] }}{% else %}Nessuna trama disponibile.{% endif %}\n\n{% if C | length > k and C[k] %}**Cast:** {{ C[k] }}{% endif %}\n\n<br style=\"clear:both\"><small>This product uses the TMDB API but is not endorsed or certified by TMDB.</small>\n{%- else -%}\nFilm non piu' in programma.\n{%- endif -%}"
-      }
-     }
-    }
-   }
-  },
-  {
-   "type": "custom:button-card",
-   "template": "film_row",
-   "entity": "sensor.film_stasera",
-   "variables": {
-    "i": 12
-   },
-   "grid_options": {
-    "columns": "full"
-   },
-   "tap_action": {
-    "action": "fire-dom-event",
-    "browser_mod": {
-     "service": "browser_mod.popup",
-     "data": {
-      "dismissable": true,
-      "content": {
-       "type": "markdown",
-       "content": "{%- set a = states.sensor.film_stasera.attributes -%}\n{%- set ora = now().timestamp() -%}\n{%- set ns = namespace(k=-1, n=0) -%}\n{%- for j in range(a.titles | length) if a.starts[j] + 9000 >= ora -%}\n{%- if ns.n == 12 %}{% set ns.k = j %}{% endif -%}\n{%- set ns.n = ns.n + 1 -%}\n{%- endfor -%}\n{%- set k = ns.k -%}\n{%- set P = a.posters | default([]) -%}{%- set O = a.overviews | default([]) -%}\n{%- set C = a.casts | default([]) -%}{%- set Y = a.years | default([]) -%}\n{%- if k >= 0 -%}\n{% if P | length > k and P[k] %}<img src=\"{{ P[k] }}\" width=\"150\" style=\"float:left;margin:0 16px 8px 0;border-radius:8px\">{% endif %}\n**{{ a.titles[k] }}**{% if Y | length > k and Y[k] %} ({{ Y[k] }}){% endif %}\n\n{{ a.channels[k] }} · {{ a.starts[k] | timestamp_custom('%H:%M') }}{% if a.genres[k] %} · {{ a.genres[k] }}{% endif %}\n\n{% if O | length > k and O[k] %}{{ O[k] }}{% else %}Nessuna trama disponibile.{% endif %}\n\n{% if C | length > k and C[k] %}**Cast:** {{ C[k] }}{% endif %}\n\n<br style=\"clear:both\"><small>This product uses the TMDB API but is not endorsed or certified by TMDB.</small>\n{%- else -%}\nFilm non piu' in programma.\n{%- endif -%}"
-      }
-     }
-    }
-   }
-  },
-  {
-   "type": "custom:button-card",
-   "template": "film_row",
-   "entity": "sensor.film_stasera",
-   "variables": {
-    "i": 13
-   },
-   "grid_options": {
-    "columns": "full"
-   },
-   "tap_action": {
-    "action": "fire-dom-event",
-    "browser_mod": {
-     "service": "browser_mod.popup",
-     "data": {
-      "dismissable": true,
-      "content": {
-       "type": "markdown",
-       "content": "{%- set a = states.sensor.film_stasera.attributes -%}\n{%- set ora = now().timestamp() -%}\n{%- set ns = namespace(k=-1, n=0) -%}\n{%- for j in range(a.titles | length) if a.starts[j] + 9000 >= ora -%}\n{%- if ns.n == 13 %}{% set ns.k = j %}{% endif -%}\n{%- set ns.n = ns.n + 1 -%}\n{%- endfor -%}\n{%- set k = ns.k -%}\n{%- set P = a.posters | default([]) -%}{%- set O = a.overviews | default([]) -%}\n{%- set C = a.casts | default([]) -%}{%- set Y = a.years | default([]) -%}\n{%- if k >= 0 -%}\n{% if P | length > k and P[k] %}<img src=\"{{ P[k] }}\" width=\"150\" style=\"float:left;margin:0 16px 8px 0;border-radius:8px\">{% endif %}\n**{{ a.titles[k] }}**{% if Y | length > k and Y[k] %} ({{ Y[k] }}){% endif %}\n\n{{ a.channels[k] }} · {{ a.starts[k] | timestamp_custom('%H:%M') }}{% if a.genres[k] %} · {{ a.genres[k] }}{% endif %}\n\n{% if O | length > k and O[k] %}{{ O[k] }}{% else %}Nessuna trama disponibile.{% endif %}\n\n{% if C | length > k and C[k] %}**Cast:** {{ C[k] }}{% endif %}\n\n<br style=\"clear:both\"><small>This product uses the TMDB API but is not endorsed or certified by TMDB.</small>\n{%- else -%}\nFilm non piu' in programma.\n{%- endif -%}"
-      }
-     }
-    }
-   }
-  },
-  {
-   "type": "custom:button-card",
-   "template": "film_row",
-   "entity": "sensor.film_stasera",
-   "variables": {
-    "i": 14
-   },
-   "grid_options": {
-    "columns": "full"
-   },
-   "tap_action": {
-    "action": "fire-dom-event",
-    "browser_mod": {
-     "service": "browser_mod.popup",
-     "data": {
-      "dismissable": true,
-      "content": {
-       "type": "markdown",
-       "content": "{%- set a = states.sensor.film_stasera.attributes -%}\n{%- set ora = now().timestamp() -%}\n{%- set ns = namespace(k=-1, n=0) -%}\n{%- for j in range(a.titles | length) if a.starts[j] + 9000 >= ora -%}\n{%- if ns.n == 14 %}{% set ns.k = j %}{% endif -%}\n{%- set ns.n = ns.n + 1 -%}\n{%- endfor -%}\n{%- set k = ns.k -%}\n{%- set P = a.posters | default([]) -%}{%- set O = a.overviews | default([]) -%}\n{%- set C = a.casts | default([]) -%}{%- set Y = a.years | default([]) -%}\n{%- if k >= 0 -%}\n{% if P | length > k and P[k] %}<img src=\"{{ P[k] }}\" width=\"150\" style=\"float:left;margin:0 16px 8px 0;border-radius:8px\">{% endif %}\n**{{ a.titles[k] }}**{% if Y | length > k and Y[k] %} ({{ Y[k] }}){% endif %}\n\n{{ a.channels[k] }} · {{ a.starts[k] | timestamp_custom('%H:%M') }}{% if a.genres[k] %} · {{ a.genres[k] }}{% endif %}\n\n{% if O | length > k and O[k] %}{{ O[k] }}{% else %}Nessuna trama disponibile.{% endif %}\n\n{% if C | length > k and C[k] %}**Cast:** {{ C[k] }}{% endif %}\n\n<br style=\"clear:both\"><small>This product uses the TMDB API but is not endorsed or certified by TMDB.</small>\n{%- else -%}\nFilm non piu' in programma.\n{%- endif -%}"
-      }
-     }
-    }
-   }
-  },
-  {
-   "type": "custom:button-card",
-   "template": "film_row",
-   "entity": "sensor.film_stasera",
-   "variables": {
-    "i": 15
-   },
-   "grid_options": {
-    "columns": "full"
-   },
-   "tap_action": {
-    "action": "fire-dom-event",
-    "browser_mod": {
-     "service": "browser_mod.popup",
-     "data": {
-      "dismissable": true,
-      "content": {
-       "type": "markdown",
-       "content": "{%- set a = states.sensor.film_stasera.attributes -%}\n{%- set ora = now().timestamp() -%}\n{%- set ns = namespace(k=-1, n=0) -%}\n{%- for j in range(a.titles | length) if a.starts[j] + 9000 >= ora -%}\n{%- if ns.n == 15 %}{% set ns.k = j %}{% endif -%}\n{%- set ns.n = ns.n + 1 -%}\n{%- endfor -%}\n{%- set k = ns.k -%}\n{%- set P = a.posters | default([]) -%}{%- set O = a.overviews | default([]) -%}\n{%- set C = a.casts | default([]) -%}{%- set Y = a.years | default([]) -%}\n{%- if k >= 0 -%}\n{% if P | length > k and P[k] %}<img src=\"{{ P[k] }}\" width=\"150\" style=\"float:left;margin:0 16px 8px 0;border-radius:8px\">{% endif %}\n**{{ a.titles[k] }}**{% if Y | length > k and Y[k] %} ({{ Y[k] }}){% endif %}\n\n{{ a.channels[k] }} · {{ a.starts[k] | timestamp_custom('%H:%M') }}{% if a.genres[k] %} · {{ a.genres[k] }}{% endif %}\n\n{% if O | length > k and O[k] %}{{ O[k] }}{% else %}Nessuna trama disponibile.{% endif %}\n\n{% if C | length > k and C[k] %}**Cast:** {{ C[k] }}{% endif %}\n\n<br style=\"clear:both\"><small>This product uses the TMDB API but is not endorsed or certified by TMDB.</small>\n{%- else -%}\nFilm non piu' in programma.\n{%- endif -%}"
-      }
-     }
-    }
-   }
-  },
-  {
-   "type": "custom:button-card",
-   "template": "film_row",
-   "entity": "sensor.film_stasera",
-   "variables": {
-    "i": 16
-   },
-   "grid_options": {
-    "columns": "full"
-   },
-   "tap_action": {
-    "action": "fire-dom-event",
-    "browser_mod": {
-     "service": "browser_mod.popup",
-     "data": {
-      "dismissable": true,
-      "content": {
-       "type": "markdown",
-       "content": "{%- set a = states.sensor.film_stasera.attributes -%}\n{%- set ora = now().timestamp() -%}\n{%- set ns = namespace(k=-1, n=0) -%}\n{%- for j in range(a.titles | length) if a.starts[j] + 9000 >= ora -%}\n{%- if ns.n == 16 %}{% set ns.k = j %}{% endif -%}\n{%- set ns.n = ns.n + 1 -%}\n{%- endfor -%}\n{%- set k = ns.k -%}\n{%- set P = a.posters | default([]) -%}{%- set O = a.overviews | default([]) -%}\n{%- set C = a.casts | default([]) -%}{%- set Y = a.years | default([]) -%}\n{%- if k >= 0 -%}\n{% if P | length > k and P[k] %}<img src=\"{{ P[k] }}\" width=\"150\" style=\"float:left;margin:0 16px 8px 0;border-radius:8px\">{% endif %}\n**{{ a.titles[k] }}**{% if Y | length > k and Y[k] %} ({{ Y[k] }}){% endif %}\n\n{{ a.channels[k] }} · {{ a.starts[k] | timestamp_custom('%H:%M') }}{% if a.genres[k] %} · {{ a.genres[k] }}{% endif %}\n\n{% if O | length > k and O[k] %}{{ O[k] }}{% else %}Nessuna trama disponibile.{% endif %}\n\n{% if C | length > k and C[k] %}**Cast:** {{ C[k] }}{% endif %}\n\n<br style=\"clear:both\"><small>This product uses the TMDB API but is not endorsed or certified by TMDB.</small>\n{%- else -%}\nFilm non piu' in programma.\n{%- endif -%}"
-      }
-     }
-    }
-   }
-  },
-  {
-   "type": "custom:button-card",
-   "template": "film_row",
-   "entity": "sensor.film_stasera",
-   "variables": {
-    "i": 17
-   },
-   "grid_options": {
-    "columns": "full"
-   },
-   "tap_action": {
-    "action": "fire-dom-event",
-    "browser_mod": {
-     "service": "browser_mod.popup",
-     "data": {
-      "dismissable": true,
-      "content": {
-       "type": "markdown",
-       "content": "{%- set a = states.sensor.film_stasera.attributes -%}\n{%- set ora = now().timestamp() -%}\n{%- set ns = namespace(k=-1, n=0) -%}\n{%- for j in range(a.titles | length) if a.starts[j] + 9000 >= ora -%}\n{%- if ns.n == 17 %}{% set ns.k = j %}{% endif -%}\n{%- set ns.n = ns.n + 1 -%}\n{%- endfor -%}\n{%- set k = ns.k -%}\n{%- set P = a.posters | default([]) -%}{%- set O = a.overviews | default([]) -%}\n{%- set C = a.casts | default([]) -%}{%- set Y = a.years | default([]) -%}\n{%- if k >= 0 -%}\n{% if P | length > k and P[k] %}<img src=\"{{ P[k] }}\" width=\"150\" style=\"float:left;margin:0 16px 8px 0;border-radius:8px\">{% endif %}\n**{{ a.titles[k] }}**{% if Y | length > k and Y[k] %} ({{ Y[k] }}){% endif %}\n\n{{ a.channels[k] }} · {{ a.starts[k] | timestamp_custom('%H:%M') }}{% if a.genres[k] %} · {{ a.genres[k] }}{% endif %}\n\n{% if O | length > k and O[k] %}{{ O[k] }}{% else %}Nessuna trama disponibile.{% endif %}\n\n{% if C | length > k and C[k] %}**Cast:** {{ C[k] }}{% endif %}\n\n<br style=\"clear:both\"><small>This product uses the TMDB API but is not endorsed or certified by TMDB.</small>\n{%- else -%}\nFilm non piu' in programma.\n{%- endif -%}"
-      }
-     }
-    }
-   }
-  },
-  {
-   "type": "custom:button-card",
-   "template": "film_row",
-   "entity": "sensor.film_stasera",
-   "variables": {
-    "i": 18
-   },
-   "grid_options": {
-    "columns": "full"
-   },
-   "tap_action": {
-    "action": "fire-dom-event",
-    "browser_mod": {
-     "service": "browser_mod.popup",
-     "data": {
-      "dismissable": true,
-      "content": {
-       "type": "markdown",
-       "content": "{%- set a = states.sensor.film_stasera.attributes -%}\n{%- set ora = now().timestamp() -%}\n{%- set ns = namespace(k=-1, n=0) -%}\n{%- for j in range(a.titles | length) if a.starts[j] + 9000 >= ora -%}\n{%- if ns.n == 18 %}{% set ns.k = j %}{% endif -%}\n{%- set ns.n = ns.n + 1 -%}\n{%- endfor -%}\n{%- set k = ns.k -%}\n{%- set P = a.posters | default([]) -%}{%- set O = a.overviews | default([]) -%}\n{%- set C = a.casts | default([]) -%}{%- set Y = a.years | default([]) -%}\n{%- if k >= 0 -%}\n{% if P | length > k and P[k] %}<img src=\"{{ P[k] }}\" width=\"150\" style=\"float:left;margin:0 16px 8px 0;border-radius:8px\">{% endif %}\n**{{ a.titles[k] }}**{% if Y | length > k and Y[k] %} ({{ Y[k] }}){% endif %}\n\n{{ a.channels[k] }} · {{ a.starts[k] | timestamp_custom('%H:%M') }}{% if a.genres[k] %} · {{ a.genres[k] }}{% endif %}\n\n{% if O | length > k and O[k] %}{{ O[k] }}{% else %}Nessuna trama disponibile.{% endif %}\n\n{% if C | length > k and C[k] %}**Cast:** {{ C[k] }}{% endif %}\n\n<br style=\"clear:both\"><small>This product uses the TMDB API but is not endorsed or certified by TMDB.</small>\n{%- else -%}\nFilm non piu' in programma.\n{%- endif -%}"
-      }
-     }
-    }
-   }
-  },
-  {
-   "type": "custom:button-card",
-   "template": "film_row",
-   "entity": "sensor.film_stasera",
-   "variables": {
-    "i": 19
-   },
-   "grid_options": {
-    "columns": "full"
-   },
-   "tap_action": {
-    "action": "fire-dom-event",
-    "browser_mod": {
-     "service": "browser_mod.popup",
-     "data": {
-      "dismissable": true,
-      "content": {
-       "type": "markdown",
-       "content": "{%- set a = states.sensor.film_stasera.attributes -%}\n{%- set ora = now().timestamp() -%}\n{%- set ns = namespace(k=-1, n=0) -%}\n{%- for j in range(a.titles | length) if a.starts[j] + 9000 >= ora -%}\n{%- if ns.n == 19 %}{% set ns.k = j %}{% endif -%}\n{%- set ns.n = ns.n + 1 -%}\n{%- endfor -%}\n{%- set k = ns.k -%}\n{%- set P = a.posters | default([]) -%}{%- set O = a.overviews | default([]) -%}\n{%- set C = a.casts | default([]) -%}{%- set Y = a.years | default([]) -%}\n{%- if k >= 0 -%}\n{% if P | length > k and P[k] %}<img src=\"{{ P[k] }}\" width=\"150\" style=\"float:left;margin:0 16px 8px 0;border-radius:8px\">{% endif %}\n**{{ a.titles[k] }}**{% if Y | length > k and Y[k] %} ({{ Y[k] }}){% endif %}\n\n{{ a.channels[k] }} · {{ a.starts[k] | timestamp_custom('%H:%M') }}{% if a.genres[k] %} · {{ a.genres[k] }}{% endif %}\n\n{% if O | length > k and O[k] %}{{ O[k] }}{% else %}Nessuna trama disponibile.{% endif %}\n\n{% if C | length > k and C[k] %}**Cast:** {{ C[k] }}{% endif %}\n\n<br style=\"clear:both\"><small>This product uses the TMDB API but is not endorsed or certified by TMDB.</small>\n{%- else -%}\nFilm non piu' in programma.\n{%- endif -%}"
-      }
-     }
-    }
+   "custom_fields": {
+    "c": "[[[ const a = entity.attributes; const k = variables.i; const esc = (s) => String(s == null ? '' : s).replace(/[&<>\"']/g, (c) => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '\"': '&quot;', \"'\": '&#39;'}[c])); if (k >= (a.prog_channels || []).length) return ''; const hm = (t) => new Date(t * 1000).toLocaleTimeString('it-IT', {hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Rome'}); const col = ({1: '#3B82F6', 2: '#F59E0B', 3: '#10B981'})[(a.prog_groups || [])[k]] || '#A855F7'; return '<span style=\"display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:8px;background:' + col + '\"></span>' + esc(a.prog_channels[k]); ]]]",
+    "p": "[[[ const a = entity.attributes; const k = variables.i; const esc = (s) => String(s == null ? '' : s).replace(/[&<>\"']/g, (c) => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '\"': '&quot;', \"'\": '&#39;'}[c])); if (k >= (a.prog_channels || []).length) return ''; const hm = (t) => new Date(t * 1000).toLocaleTimeString('it-IT', {hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Rome'}); const t = a.prog1_starts[k]; if (!t) return '&ndash;'; return '<b>' + hm(t) + '</b> ' + esc(a.prog1_titles[k]); ]]]",
+    "l": "[[[ const a = entity.attributes; const k = variables.i; const esc = (s) => String(s == null ? '' : s).replace(/[&<>\"']/g, (c) => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '\"': '&quot;', \"'\": '&#39;'}[c])); if (k >= (a.prog_channels || []).length) return ''; const hm = (t) => new Date(t * 1000).toLocaleTimeString('it-IT', {hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Rome'}); const t = a.prog2_starts[k]; if (!t) return '&ndash;'; return hm(t) + ' ' + esc(a.prog2_titles[k]); ]]]"
    }
   }
- ]
+ }
 }

@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-"""Genera dashboard.json: 20 righe button-card (orario, logo, titolo) per i film di sensor.film_stasera, ognuna con un
+"""Genera dashboard.json, la dashboard intera (vista Film e vista Programmi, ognuna con in alto il testo che porta
+all'altra): 20 righe button-card (orario, logo, titolo) per i film di sensor.film_stasera, ognuna con un
 popup browser_mod (locandina, trama, cast). Uso: make_dashboard.py > dashboard.json"""
 import json
 import sys
@@ -92,6 +93,90 @@ def build_config(slots=20):
     return {"button_card_templates": {"film_row": film_row_template()}, "cards": cards}
 
 
+# --- Vista Programmi: un canale per riga, con prima e seconda serata (attributi prog_* del sensore) ---
+PROG_PATH = "programmi"
+FILM_PATH = "stasera"
+DASH_URL = "/film-stasera"
+GROUP_COLORS = "{1: '#3B82F6', 2: '#F59E0B', 3: '#10B981'}"   # Rai, Mediaset, Discovery; gli altri viola come nel tile
+
+PROG_HEAD = (
+    "const a = entity.attributes; const k = variables.i; "
+    "const esc = (s) => String(s == null ? '' : s).replace(/[&<>\"']/g, (c) => "
+    "({'&': '&amp;', '<': '&lt;', '>': '&gt;', '\"': '&quot;', \"'\": '&#39;'}[c])); "
+    "if (k >= (a.prog_channels || []).length) return ''; "
+    "const hm = (t) => new Date(t * 1000).toLocaleTimeString('it-IT', "
+    "{hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Rome'}); "
+)
+
+
+def prog_row_template():
+    return {
+        "show_icon": False, "show_name": False, "show_state": False,
+        "styles": {
+            "card": [{"padding": "6px 12px"},
+                     {"display": "[[[ " + PROG_HEAD.replace("return ''", "return 'none'") + "return 'block'; ]]]"}],
+            "grid": [{"grid-template-areas": '"c p" "c l"'}, {"grid-template-columns": "150px 1fr"},
+                     {"align-items": "center"}, {"column-gap": "12px"}, {"row-gap": "2px"}],
+            "custom_fields": {
+                "c": [{"justify-self": "start"}, {"font-weight": "bold"}],
+                "p": [{"text-align": "left"}, {"overflow": "hidden"}],
+                "l": [{"text-align": "left"}, {"overflow": "hidden"}, {"opacity": "0.7"}, {"font-size": "0.9em"}],
+            },
+        },
+        "custom_fields": {
+            "c": "[[[ " + PROG_HEAD + f"const col = ({GROUP_COLORS})[(a.prog_groups || [])[k]] || '#A855F7'; "
+                 "return '<span style=\"display:inline-block;width:10px;height:10px;border-radius:50%;"
+                 "margin-right:8px;background:' + col + '\"></span>' + esc(a.prog_channels[k]); ]]]",
+            "p": "[[[ " + PROG_HEAD + "const t = a.prog1_starts[k]; if (!t) return '&ndash;'; "
+                 "return '<b>' + hm(t) + '</b> ' + esc(a.prog1_titles[k]); ]]]",
+            "l": "[[[ " + PROG_HEAD + "const t = a.prog2_starts[k]; if (!t) return '&ndash;'; "
+                 "return hm(t) + ' ' + esc(a.prog2_titles[k]); ]]]",
+        },
+    }
+
+
+def nav_card(text, path):
+    """Testo cliccabile in cima a una vista: porta all'altra vista della stessa dashboard."""
+    return {
+        "type": "custom:button-card",
+        "name": text,
+        "show_icon": False,
+        "grid_options": {"columns": "full"},
+        "styles": {
+            "card": [{"background": "none"}, {"box-shadow": "none"}, {"padding": "0 12px"}],
+            "name": [{"color": "var(--primary-color)"}, {"font-weight": "500"}, {"font-size": "16px"},
+                     {"justify-self": "start"}],
+        },
+        "tap_action": {"action": "navigate", "navigation_path": f"{DASH_URL}/{path}"},
+    }
+
+
+def build_programmes_cards(slots=20):
+    return [{"type": "custom:button-card", "template": "prog_row", "entity": SENSOR,
+             "variables": {"i": i}, "grid_options": {"columns": "full"}} for i in range(slots)]
+
+
+def build_dashboard(slots=20):
+    """La dashboard intera: vista Film (stasera) e vista Programmi, ognuna con in alto il testo che porta all'altra."""
+    films = build_config(slots)
+    def view(title, path, icon, cards):
+        return {"title": title, "path": path, "type": "sections", "icon": icon, "max_columns": 2,
+                "sections": [{"type": "grid", "cards": cards}]}
+    return {
+        "views": [
+            view("Stasera", FILM_PATH, "mdi:movie-open",
+                 [{"type": "heading", "heading": "Film in TV stasera", "heading_style": "title",
+                   "icon": "mdi:movie-open"},
+                  nav_card("Programmi stasera \u2192", PROG_PATH)] + films["cards"]),
+            view("Programmi", PROG_PATH, "mdi:television-classic",
+                 [{"type": "heading", "heading": "Programmi in TV stasera", "heading_style": "title",
+                   "icon": "mdi:television-classic"},
+                  nav_card("\u2190 Film stasera", FILM_PATH)] + build_programmes_cards(slots)),
+        ],
+        "button_card_templates": {**films["button_card_templates"], "prog_row": prog_row_template()},
+    }
+
+
 if __name__ == "__main__":
-    json.dump(build_config(), sys.stdout, ensure_ascii=False, indent=1)
+    json.dump(build_dashboard(), sys.stdout, ensure_ascii=False, indent=1)
     print()
